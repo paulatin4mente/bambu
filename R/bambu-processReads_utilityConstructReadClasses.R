@@ -317,11 +317,7 @@ prepareTesFromReads <- function(readGrgList, max_dist = 100){
     filter(N >= 10)
   referenceTES <- GRanges(seqnames = collapsed_tes$seqnames,
                           ranges = IRanges(end = collapsed_tes$end, width = 1),
-                          strand = collapsed_tes$strand)
-  
-  referenceTES <<- referenceTES
-
-
+                          strand = collapsed_tes$strand)                   
   return(referenceTES)
 }
 

@@ -311,11 +311,6 @@ constructReadClasses <- function(readGrgList, genomeSequence, annotations, refer
     fitReadClassModel = TRUE, min.exonOverlap = 10, defaultModels = NULL, returnModel = FALSE, 
     verbose = FALSE, processByChromosome = FALSE, trackReads = FALSE, fusionMode = FALSE){
     warnings <- c() ###TODO
-    
-    print("Saving the objects in the constructReadClasses")
-    readGrgList <<- readGrgList
-    genomeSequence <<- genomeSequence 
-    annotations <<- annotations
 
     if(processByChromosome){
         # construct read classes for each chromosome seperately 
