@@ -104,10 +104,10 @@ updateStartEndReadCount <- function(combinedFeatureTibble){
         end = readCountWeightedMedian(.SD,z,y),
         readCount = sum(.SD[,y], na.rm = TRUE)),
         by = rowID,  env = I(list(x = startCols, y = readCountCols,z = endCols))]
-
     combinedFeatureTibble <- startEndDt[combinedFeatureTibble[,.(intronStarts, intronEnds, chr, strand, 
                                                                  firstExonGroup, lastExonGroup, tesId, startRegionId, endRegionId,compatible, equal,
-                                                                 maxTxScore, maxTxScore.noFit, NSampleReadCount, NSampleReadProp, 
+                                                                 maxTxScore, maxTxScore.noFit, maxIntronChainScore, maxIntronChainScore.noFit, 
+                                                                 maxTssScore, maxTssScore.noFit, maxTesScore, maxTesScore.noFit,  NSampleReadCount, NSampleReadProp, 
                                                                  NSampleTxScore, rowID)], on = "rowID"]
     combinedFeatureTibble[, rowID := NULL]
     return(combinedFeatureTibble)
