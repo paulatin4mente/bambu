@@ -3,8 +3,7 @@
 #' @inheritParams bambu
 #' @noRd
 bambu.extendAnnotations <- function(readClassList, annotations, NDR, preset = "unstranded_cDNA",
-    isoreParameters, stranded, bpParameters, fusionMode = FALSE, verbose = FALSE, 
-    predictStart = FALSE, predictEnd = FALSE) {
+    isoreParameters, stranded, bpParameters, fusionMode = FALSE, verbose = FALSE) {
     start.ptm_all <- proc.time()
     combinedTxCandidates <- isore.combineTranscriptCandidates(readClassList,
         stranded, ## stranded used for unspliced reduce  
@@ -37,9 +36,7 @@ bambu.extendAnnotations <- function(readClassList, annotations, NDR, preset = "u
         prefix = isoreParameters[["prefix"]],
         baselineFDR = isoreParameters[["baselineFDR"]],
         defaultModels = isoreParameters[["defaultModels"]],
-        verbose = verbose,
-        predictStart = isoreParameters[["predictStart"]],
-        predictEnd = isoreParameters[["predictEnd"]])
+        verbose = verbose)
     end.ptm_all <- proc.time()
     if (verbose) message("extend annotations in ",
                          round((end.ptm_all - start.ptm_all)[3] / 60, 1)," mins.")

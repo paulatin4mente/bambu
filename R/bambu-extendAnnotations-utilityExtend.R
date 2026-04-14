@@ -7,8 +7,7 @@ isore.extendAnnotations <- function(combinedTranscripts, annotationGrangesList,
                                     min.sampleNumber = 1, NDR = NULL, min.exonDistance = 35, min.exonOverlap = 10,
                                     min.primarySecondaryDist = 5, min.primarySecondaryDistStartEnd = 5, 
                                     min.readFractionByEqClass = 0, fusionMode = FALSE,
-                                    prefix = "Bambu", baselineFDR = 0.1, defaultModels = NULL, verbose = FALSE, 
-                                    predictStart = FALSE, predictEnd = FALSE){
+                                    prefix = "Bambu", baselineFDR = 0.1, defaultModels = NULL, verbose = FALSE){
   combinedTranscripts <- filterTranscripts(combinedTranscripts, min.sampleNumber)
   if (nrow(combinedTranscripts) > 0) {
     group_var <- c("intronStarts","intronEnds","chr","strand","start","end",
@@ -48,7 +47,7 @@ isore.extendAnnotations <- function(combinedTranscripts, annotationGrangesList,
     # ## filter out transcripts
     extendedAnnotationRanges <- filterTranscriptsByAnnotation(
       rowDataCombined, annotationGrangesList, preset = preset, exonRangesCombined, prefix,
-      remove.subsetTx, min.readFractionByEqClass, baselineFDR, NDR, defaultModels, verbose, predictStart, predictEnd)
+      remove.subsetTx, min.readFractionByEqClass, baselineFDR, NDR, defaultModels, verbose)
     message(paste0("Novel transcripts detected: ", sum(mcols(extendedAnnotationRanges)$novelTranscript)))
     message(paste0("Novel genes detected: ", length(unique(mcols(extendedAnnotationRanges)$GENEID[mcols(extendedAnnotationRanges)$novelGene]))))
     message(paste0("Low confidence transcripts excluded: ", length(metadata(extendedAnnotationRanges)$lowConfidenceTranscripts)))
@@ -86,8 +85,7 @@ filterTranscripts <- function(combinedTranscripts, min.sampleNumber){
 filterTranscriptsByAnnotation <- function(rowDataCombined, annotationGrangesList, preset = "unstranded_cDNA",
                                           exonRangesCombined, prefix,  remove.subsetTx, 
                                           min.readFractionByEqClass, baselineFDR = 0.1, 
-                                          NDR = NULL, defaultModels = NULL, verbose, 
-                                          predictStart = FALSE, predictEnd = FALSE) {
+                                          NDR = NULL, defaultModels = NULL, verbose) {
   start.ptm <- proc.time() # (1) based on transcript usage
   
   #calculate relative read count before any filtering
@@ -145,7 +143,7 @@ filterTranscriptsByAnnotation <- function(rowDataCombined, annotationGrangesList
   extendedAnnotationRanges <- combindRowDataWithRanges(rowDataCombined, exonRangesCombined)
   extendedAnnotationRanges <- combineWithAnnotations(
     rowDataCombined, extendedAnnotationRanges, 
-    annotationGrangesList, prefix, predictStart, predictEnd)
+    annotationGrangesList, prefix)
   minEqClasses <-
     getMinimumEqClassByTx(extendedAnnotationRanges, preset = preset) # get eqClasses
   if(!identical(names(extendedAnnotationRanges),minEqClasses$queryTxId)) warning('eq classes might be incorrect')
@@ -715,9 +713,8 @@ combindRowDataWithRanges <- function(rowDataCombinedFiltered, exonRangesCombined
 
 #' combine annotations with predicted transcripts
 #' @noRd
-combineWithAnnotations <- function(rowDataCombinedFiltered, 
-                                   extendedAnnotationRanges,annotationGrangesList, prefix, 
-                                   predictStart = FALSE, predictEnd = FALSE){
+combineWithAnnotations <- function(rowDataCombinedFiltered,
+                                   extendedAnnotationRanges, annotationGrangesList, prefix){
   equalRanges <- rowDataCombinedFiltered[!(rowDataCombinedFiltered$novelTranscript),]
   #remove extended ranges that are already present in annotation
   extendedAnnotationRanges <- extendedAnnotationRanges[rowDataCombinedFiltered$novelTranscript]
