@@ -50,7 +50,7 @@ assignReadClasstoTranscripts <- function(readClassList, annotations, isoreParame
 #' @noRd
 generateUniqueCounts <- function(readClassDt, countMatrix, annotations){
     x <- readClassDt %>% filter(!multi_align & !is.na(eqClass.match))
-    uniqueCounts <- countMatrix[x$eqClass.match,]
+    uniqueCounts <- countMatrix[x$eqClass.match,, drop = FALSE]
     #uniqueCounts.tx <- sparse.model.matrix(~ factor(x$txid) - 1)
 
     # the following code was modified to handle the case when there is only one unique transcript
@@ -64,7 +64,9 @@ generateUniqueCounts <- function(readClassDt, countMatrix, annotations){
     rownames(uniqueCounts) <- names(annotations)[match(as.numeric(levels(factor(x$txid))),mcols(annotations)$txid)]
     counts <- sparseMatrix(length(annotations), ncol(uniqueCounts), x = 0)
     rownames(counts) <- names(annotations)
-    counts[rownames(uniqueCounts),] <- uniqueCounts
+    idx <- match(rownames(uniqueCounts), rownames(counts))
+    valid <- !is.na(idx)
+    counts[idx[valid],] <- uniqueCounts[valid,, drop = FALSE]
     return(counts)
     # these three lines appear after return, so it's not used, is this used for debug only?
     # counts.total = colSums(countMatrix) + colSums(incompatibleCountMatrix)
@@ -80,7 +82,9 @@ generateIncompatibleCounts <- function(incompatibleCountMatrix, annotations){
     rownames(incompatibleCountMatrix) <- genes[as.numeric(rownames(incompatibleCountMatrix))]
     geneMat <- sparseMatrix(length(genes), ncol(incompatibleCountMatrix), x = 0)
     rownames(geneMat) <- genes
-    geneMat[rownames(incompatibleCountMatrix),] <- incompatibleCountMatrix
+    idx <- match(rownames(incompatibleCountMatrix), rownames(geneMat))
+    valid <- !is.na(idx)
+    geneMat[idx[valid],] <- incompatibleCountMatrix[valid,, drop = FALSE]
     return(geneMat)
 }
 
