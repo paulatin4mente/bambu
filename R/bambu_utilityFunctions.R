@@ -29,7 +29,7 @@ setIsoreParameters <- function(isoreParameters){
         min.primarySecondaryDistStartEnd2 = 5, # for read assignment
         min.intronChainScore.multiExon = 0,
         min.intronChainScore.singleExon = 1,
-        rcSplitThreshold = 0,
+        rc.startEndGroupDist = 0,
         fitReadClassModel = TRUE,
         defaultModels = defaultModels,
         returnModel = FALSE,

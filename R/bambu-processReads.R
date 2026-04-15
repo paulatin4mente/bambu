@@ -53,11 +53,11 @@ bambu.processReads <- function(reads, annotations, genomeSequence, referenceTss 
     defaultModels <- isoreParameters[["defaultModels"]]
     returnModel <- isoreParameters[["returnModel"]]
     min.exonOverlap <- isoreParameters[["min.exonOverlap"]]
-    rcSplitThreshold <- isoreParameters[["rcSplitThreshold"]]
+    rc.startEndGroupDist <- isoreParameters[["rc.startEndGroupDist"]]
 
     if(processByBam){
         readClassList <- bplapply(seq_along(reads), function(i) {
-            bambu.processReadsByFile(bam.file = reads[i], referenceTss = referenceTss, rcSplitThreshold = rcSplitThreshold,
+            bambu.processReadsByFile(bam.file = reads[i], referenceTss = referenceTss, rc.startEndGroupDist = rc.startEndGroupDist,
             preset = preset,
             genomeSequence = genomeSequence,annotations = annotations, 
             stranded = stranded, min.readCount = min.readCount, 
@@ -96,7 +96,7 @@ bambu.processReads <- function(reads, annotations, genomeSequence, referenceTss 
         }
         readClassList <- constructReadClasses(readGrgList, genomeSequence = genomeSequence, annotations = annotations,
             preset = preset,
-            referenceTss = referenceTss, rcSplitThreshold = rcSplitThreshold,
+            referenceTss = referenceTss, rc.startEndGroupDist = rc.startEndGroupDist,
             stranded = stranded, min.readCount = min.readCount, 
             fitReadClassModel = fitReadClassModel, min.exonOverlap = min.exonOverlap, 
             defaultModels = defaultModels, returnModel = returnModel, verbose = verbose, 
@@ -125,7 +125,7 @@ bambu.processReads <- function(reads, annotations, genomeSequence, referenceTss 
 #' @inheritParams bambu
 #' @importFrom GenomeInfoDb seqlevels seqlevels<- keepSeqlevels
 #' @noRd
-bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations, preset = "unstranded_cDNA", referenceTss = NULL, rcSplitThreshold = 0,
+bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations, preset = "unstranded_cDNA", referenceTss = NULL, rc.startEndGroupDist = 0,
     yieldSize = NULL, stranded = FALSE, min.readCount = 2, 
     fitReadClassModel = TRUE, min.exonOverlap = 10, defaultModels = NULL, returnModel = FALSE, 
     verbose = FALSE, processByChromosome = FALSE, trackReads = FALSE, fusionMode = FALSE, demultiplexed = FALSE, 
@@ -188,7 +188,7 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations, pres
     # construct read classes for each chromosome seperately 
     if(processByChromosome){
         se <- lowMemoryConstructReadClasses(readGrgList, genomeSequence, annotations, stranded, verbose,bam.file, preset = preset,
-                                            referenceTss = referenceTss, rcSplitThreshold = rcSplitThreshold)
+                                            referenceTss = referenceTss, rc.startEndGroupDist = rc.startEndGroupDist)
     } else{
         unlisted_junctions <- unlistIntrons(readGrgList, use.ids = TRUE)
         uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions, 
@@ -196,7 +196,7 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations, pres
         se <- isore.constructReadClasses(readGrgList, preset = preset, 
                                               unlisted_junctions, uniqueJunctions, runName = "TODO",
                                               annotations, stranded, verbose, 
-                                              referenceTss = referenceTss, rcSplitThreshold = rcSplitThreshold)
+                                              referenceTss = referenceTss, rc.startEndGroupDist = rc.startEndGroupDist)
 
     }
 
@@ -315,7 +315,7 @@ bambu.readsByFile <- function(bam.file, genomeSequence, annotations,
 
 #' Construct read classes
 #' @noRd
-constructReadClasses <- function(readGrgList, genomeSequence, annotations, preset = "unstranded_cDNA",referenceTss = NULL, rcSplitThreshold = 0,
+constructReadClasses <- function(readGrgList, genomeSequence, annotations, preset = "unstranded_cDNA",referenceTss = NULL, rc.startEndGroupDist = 0,
     stranded = FALSE, min.readCount = 2, 
     fitReadClassModel = TRUE, min.exonOverlap = 10, defaultModels = NULL, returnModel = FALSE, 
     verbose = FALSE, processByChromosome = FALSE, trackReads = FALSE, fusionMode = FALSE){
@@ -331,7 +331,7 @@ constructReadClasses <- function(readGrgList, genomeSequence, annotations, prese
         se <- isore.constructReadClasses(readGrgList, preset = preset, 
                                         unlisted_junctions, uniqueJunctions, runName = "TODO",
                                         annotations, stranded, verbose, 
-                                        referenceTss = referenceTss, rcSplitThreshold = rcSplitThreshold)
+                                        referenceTss = referenceTss, rc.startEndGroupDist = rc.startEndGroupDist)
 
     }
     metadata(se)$warnings <- warnings
@@ -358,7 +358,7 @@ constructReadClasses <- function(readGrgList, genomeSequence, annotations, prese
 
 #' Low memory mode for construct read classes (processByChromosome)
 #' @noRd
-lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence, referenceTss = NULL, rcSplitThreshold = 0, preset = "unstranded_cDNA",
+lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence, referenceTss = NULL, rc.startEndGroupDist = 0, preset = "unstranded_cDNA",
                                           annotations, stranded, verbose,bam.file, fusionMode = FALSE){
     if(fusionMode){
         readGrgList <- list(readGrgList)
@@ -375,7 +375,7 @@ lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence, reference
         se.temp <- isore.constructReadClasses(readGrgList[[i]], preset = preset, 
                                               unlisted_junctions, uniqueJunctions, runName = "TODO",
                                               annotations, stranded, verbose, 
-                                              referenceTss = referenceTss, rcSplitThreshold = rcSplitThreshold)
+                                              referenceTss = referenceTss, rc.startEndGroupDist = rc.startEndGroupDist)
         return(se.temp)
     })
     se <- se[!sapply(se, FUN = is.null)]
