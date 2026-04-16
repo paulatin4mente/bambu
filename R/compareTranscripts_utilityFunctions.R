@@ -1,6 +1,10 @@
 # This file contains functions that are based on ranges (rather than GRanges)
 # with the exception of getStrandFromGrList
 
+# --- getStrandFromGrList ---
+# Module: Module 6 — Visualization, comparison & output | compareTranscripts_utilityFunctions.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R, compareTranscripts.R
+# Call count: 4 calls, 2 files
 #' extract strand from GRangesList
 #' @description This function takes a GRangesList and
 #' returns a vector with the strand for each list entry.
@@ -10,7 +14,7 @@
 #' @param grl a GRangesList
 #' @return an Rle object with strand information
 #' @examples
-#' query <- readRDS(system.file("extdata", 
+#' query <- readRDS(system.file("extdata",
 #'     "annotateSpliceOverlapByDist_testQuery.rds",
 #'     package = "bambu"))
 #' strand <- as.character(getStrandFromGrList(query))
@@ -20,6 +24,10 @@ getStrandFromGrList <- function(grl) {
 }
 
 
+# --- selectStartEndExonFromRangesList ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 4 calls, 1 file
 #' Function that selects the first/last exon from an IRangesList object
 #' @param range IRangesList with elements required to be ordered by coordinates
 #' @param stand strand
@@ -38,8 +46,12 @@ selectStartEndExonFromRangesList <- function(range, strand, direction){
 
 
 
+# --- alternativeStartEndExon ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 2 calls, 1 file
 #' alternative start/end exon
-#' @description This function checks whether an 
+#' @description This function checks whether an
 #' alternative start/end exon is used by overlapping
 #' the exon ranges of the first (or last) exons of matching transcripts.
 #' @noRd
@@ -48,10 +60,14 @@ alternativeStartEndExon <- function(queryRng, subjectRng){
 }
 
 
+# --- calculateTerminalDistance ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 2 calls, 1 file
 #' alternative TSS/TES distance
 #' @description This function calculates the distance of an
 #' alternative TSS/TES by comparing the start/end coordinates
-#' of the start/end exon ranges of matching transcripts. If an 
+#' of the start/end exon ranges of matching transcripts. If an
 #' alternative first/last exon is used the distance is set to 0.
 #' @noRd
 calculateTerminalDistance <- function(queryTerminalExonRng,
@@ -71,12 +87,16 @@ calculateTerminalDistance <- function(queryTerminalExonRng,
 }
 
 
+# --- annotateInternalStartEnd ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 4 calls, 1 file
 #' annotate internal start and end first exons
 #' @description This function checks whether
 #' there is an internal start/end by overlapping
 #' the exon ranges of matching transcripts.
 #' @noRd
-annotateInternalStartEnd <- function(exonRng, fullRng, 
+annotateInternalStartEnd <- function(exonRng, fullRng,
     alternativeFirstLastExon){
     exon.Full.Rng <- expandRanges(exonRng, fullRng) 
     #internal start/end
@@ -87,6 +107,10 @@ annotateInternalStartEnd <- function(exonRng, fullRng,
     return(internalStartEndVector)
 }
 
+# --- annotateIntronRetent ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 2 calls, 1 file
 #' annotate intron retention
 #' @description This function checks whether
 #' there is intron retention by overlapping
@@ -102,9 +126,13 @@ annotateIntronRetent <- function(spliceRng, fullRng){
     return(intronRetentionVector)
 }
 
+# --- annotateExonSkip ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 2 calls, 1 file
 #' annotate exon skiping
 #' @description This function checks whether
-#' there is exon skipping by overlapping 
+#' there is exon skipping by overlapping
 #' the intron ranges of matching transcripts.
 #' @noRd
 annotateExonSkip <- function(spliceRng, fullRng, startRng, endRng){
@@ -128,8 +156,12 @@ annotateExonSkip <- function(spliceRng, fullRng, startRng, endRng){
 }
 
 
+# --- annotateExonSplice ---
+# Module: Module 6 — Visualization, comparison & output | [compareTranscripts_utilityFunctions.R]
+# Called by: compareTranscripts.R
+# Call count: 1 call, 1 file
 #' annotate exon splicing
-#' @description This function checks whether 
+#' @description This function checks whether
 #' there is alternative splicing in the 5'/3'
 #' end of an exon.
 #' @importFrom dplyr tibble %>% select
@@ -183,6 +215,10 @@ annotateExonSplice <- function(spliceRng, fullRng, startRng, endRng, strand){
 }
 
 
+# --- findExonStartExtension ---
+# Module: Module 6 — Visualization, comparison & output | compareTranscripts_utilityFunctions.R
+# Called by: compareTranscripts_utilityFunctions.R
+# Call count: 2 calls, 1 file
 #' find exon start extension
 #' @description This function checks whether
 #' there is an extension at the start of an exon
@@ -199,6 +235,10 @@ findExonStartExtension <- function(splice.Rng, match.startSplice.start,
     return(exonStartExtension)
 }
 
+# --- findExonEndExtension ---
+# Module: Module 6 — Visualization, comparison & output | compareTranscripts_utilityFunctions.R
+# Called by: compareTranscripts_utilityFunctions.R
+# Call count: 2 calls, 1 file
 #' find exon end extension
 #' @description This function checks whether
 #' there is an extension at the end of an exon
@@ -236,8 +276,12 @@ findExonEndExtension <- function(splice.Rng, match.startSplice.start,
 #'    \item matchRng repeated matched ranges
 #'    \item IdMap index of the repeated matched ranges
 #' }
+# --- expandRanges ---
+# Module: Module 6 — Visualization, comparison & output | compareTranscripts_utilityFunctions.R
+# Called by: compareTranscripts_utilityFunctions.R
+# Call count: 3 calls, 1 file
 #' @noRd
-expandRanges <- function(ranges,target){ 
+expandRanges <- function(ranges,target){
     processedRng <- rep(ranges,elementNROWS(target))
     mcols(processedRng)$IdMap <- rep(seq_along(ranges),elementNROWS(target))
     mcols(processedRng)$matchRng <- unlist(target, use.names = FALSE)
@@ -265,8 +309,12 @@ expandRanges <- function(ranges,target){
 #'    \item matchRng repeated matched ranges
 #'    \item IdMap index of the repeated matched ranges
 #' }
+# --- expandRangesList ---
+# Module: Module 6 — Visualization, comparison & output | compareTranscripts_utilityFunctions.R
+# Called by: compareTranscripts_utilityFunctions.R
+# Call count: 3 calls, 1 file
 #' @noRd
-expandRangesList <- function(rglist,target){ 
+expandRangesList <- function(rglist,target){
     processedRng <- rep(unlist(rglist, use.names = FALSE),
         rep(elementNROWS(target),times = elementNROWS(rglist)))
     mcols(processedRng)$IdMap <- rep(seq_along(rglist),

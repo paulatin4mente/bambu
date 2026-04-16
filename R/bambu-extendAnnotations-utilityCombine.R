@@ -1,3 +1,7 @@
+# --- isore.combineTranscriptCandidates ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations.R
+# Call count: 1 call, 1 file
 #' Combine transcript candidates across samples
 #' @param readClassList readClassList
 #' @param stranded stranded
@@ -34,6 +38,10 @@ isore.combineTranscriptCandidates <- function(readClassList,
 }
 
 
+# --- combineSplicedTranscriptModels ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
 #' combine spliced transcript models
 #' @noRd
 combineSplicedTranscriptModels <- function(readClassList, bpParameters, 
@@ -66,7 +74,11 @@ combineSplicedTranscriptModels <- function(readClassList, bpParameters,
     return(combinedFeatureTibble)
 }
 
-#' Sequentially combine feature tibbles 
+# --- sequentialCombineFeatureTibble ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 2 calls, 1 file
+#' Sequentially combine feature tibbles
 #' @noRd
 sequentialCombineFeatureTibble <- function(readClassList,
         indexList,intraGroup,min.readCount,min.readFractionByGene,
@@ -90,7 +102,11 @@ sequentialCombineFeatureTibble <- function(readClassList,
 
 
 
-#' @noRd 
+# --- updateStartEndReadCount ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
+#' @noRd
 updateStartEndReadCount <- function(combinedFeatureTibble){
     setDT(combinedFeatureTibble)
     combinedFeatureTibble[, rowID := .I]
@@ -113,6 +129,10 @@ updateStartEndReadCount <- function(combinedFeatureTibble){
     return(combinedFeatureTibble)
 }
 
+# --- readCountWeightedMedian ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 2 calls, 1 file
 #' Function to get median value without interpolation using certain column names
 #' @noRd
 readCountWeightedMedian <- function(dt, valuevar, timesvar){
@@ -122,7 +142,11 @@ readCountWeightedMedian <- function(dt, valuevar, timesvar){
 }
 
 
-#' Function to combine featureTibble and create the NSample variables 
+# --- combineFeatureTibble ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
+#' Function to combine featureTibble and create the NSample variables
 #' @noRd
 combineFeatureTibble <- function(combinedFeatureTibble,
         featureTibbleSummarised, index=1, intraGroup = TRUE){ 
@@ -156,18 +180,31 @@ combineFeatureTibble <- function(combinedFeatureTibble,
                                             paste0('\\1\\.',index), .x)) 
     return(combinedTable) 
 }
+# --- pmax0NA ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 6 calls, 1 file
 #' pmax replace NAs with 0
 #' @noRd
 pmax0NA <- function(vec){
     vec[is.na(vec)] <- 0
     return(pmax(vec))
 }
+# --- pmin0NA ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls (exported or not called internally)
 #' pmin replace NAs with 0
 #' @noRd
+# TODO: [UNUSED CODE] pmin0NA is defined but never called anywhere in the package; only pmax0NA is used
 pmin0NA <- function(vec){
     vec[is.na(vec)] <- 0
     return(pmin(vec))
 }
+# --- extractFeaturesFromReadClassSE ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
 #' extract important features from readClassSe object for each sample
 #' @noRd
 extractFeaturesFromReadClassSE <- function(readClassSe, sample_id,
@@ -203,7 +240,11 @@ extractFeaturesFromReadClassSE <- function(readClassSe, sample_id,
 
 #' combine unspliced transcript models
 #' @importFrom tidyr separate
-#' @importFrom dplyr %>% select mutate 
+# --- combineUnsplicedTranscriptModels ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
+#' @importFrom dplyr %>% select mutate
 #' @importFrom summarizedExperiment rowRanges
 #' @importFrom biocParallel bplapply
 #' @noRd
@@ -244,6 +285,10 @@ combineUnsplicedTranscriptModels <-
     }
 
 
+# --- extractNewUnsplicedRanges ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
 #' extract new unspliced ranges from readClassSe object for each sample
 #' @importFrom dplyr as_tibble
 #' @importFrom summarizedExperiment rowData rownames
@@ -262,6 +307,10 @@ extractNewUnsplicedRanges <- function(readClassSe, sample_id){
 }
 
 
+# --- reduceUnsplicedRanges ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
 #' reduce unspliced ranges
 #' @importFrom dplyr as_tibble %>% mutate group_by summarise ungroup
 #' @noRd
@@ -281,7 +330,11 @@ reduceUnsplicedRanges <- function(rangesList, stranded){
     return(combinedNewUnsplicedSe)
 }
 
-#' make unspliced tibble 
+# --- makeUnsplicedTibble ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityCombine.R
+# Called by: bambu-extendAnnotations-utilityCombine.R
+# Call count: 1 call, 1 file
+#' make unspliced tibble
 #' @importFrom tidyr separate_rows pivot_wider
 #' @importFrom dplyr as_tibble rename mutate select %>% group_by left_join
 #'              ungroup
@@ -304,6 +357,7 @@ makeUnsplicedTibble <- function(combinedNewUnsplicedSe,newUnsplicedSeList,
         } , BPPARAM = bpParameters))
     newUnsplicedTibble <- newUnsplicedTibble %>% 
         left_join(rowDataCombined, by =  "row_id") %>%
+        # TODO: [POOR NAMING] readCount_tmp is a generic temporary name; rename to e.g. readCountBeforeSum
         mutate(readCount_tmp = readCount) %>%
         group_by(chr,strand, start, end) %>%
         summarise(readCount = sum(readCount),

@@ -1,3 +1,7 @@
+# --- bambu ---
+# Module: Entry point (orchestrates Modules 1–5) | bambu.R
+# Called by: (not called anywhere — user-facing entry point)
+# Call count: 0 internal calls (exported; all in-repo mentions are in roxygen docs)
 #' Main function
 #' @title long read isoform reconstruction and quantification
 #' @description This function takes bam file of genomic alignments and performs
@@ -147,8 +151,8 @@ bambu <- function(reads, annotations = NULL, genome = NULL, NDR = NULL,
     fusionMode = FALSE, verbose = FALSE, demultiplexed = FALSE, quantData = NULL,
     sampleNames = NULL, cleanReads = FALSE, dedupUMI = FALSE, barcodesToFilter = NULL, clusters = NULL,
     processByChromosome = FALSE, processByBam = TRUE) {
-    message(paste0("Running Bambu-v", "3.9.0"))
-    if(!is.null(mode)){
+    message(paste0("Running Bambu-v", "3.9.0")) # TODO (JG) remove this line
+    if(!is.null(mode)){ # TODO (JG) update preset section
         if(mode == "bulk"){
             processByChromosome <- FALSE
             processByBam <- TRUE
@@ -170,20 +174,20 @@ bambu <- function(reads, annotations = NULL, genome = NULL, NDR = NULL,
             returnDistTable <- TRUE
         }
     }
-    if(lowMemory)
+    if(lowMemory)  #TODO (JG): add all deprecated functions here if any other?
         message("lowMemory has been deprecated and split into processByChromosome and processByBam. Please see Documentation")
-    if(is.null(annotations)){ 
+    if(is.null(annotations)){  #TODO (JG) [validate-input]   not required is done automatically in checkInputs/new function to create this object
         annotations <- GRangesList()
     } else {
-        annotations <- checkInputs(annotations, reads,
+        annotations <- checkInputs(annotations, reads,  # TODO (JG) checkInput should be separated into (1) a function that validates all input and returns warnings/errors; and (2) a function that prepared the annotation object based on input
             readClass.outputDir = rcOutDir, 
             genomeSequence = genome, discovery = discovery, 
             sampleNames = sampleNames, sampleData = sampleData, quantData = quantData)
     }
-    isoreParameters <- setIsoreParameters(isoreParameters = opt.discovery)
+    isoreParameters <- setIsoreParameters(isoreParameters = opt.discovery)  #TODO (JG) [validate-input]  rename as setDiscoveryParameters to be consistent with opt.discovery
     #below line is to be compatible with earlier version of running bambu
-    if(!is.null(isoreParameters$max.txNDR)) NDR = isoreParameters$max.txNDR
-    
+    if(!is.null(isoreParameters$max.txNDR)) NDR = isoreParameters$max.txNDR ##  #TODO (JG) [validate-input]   is this line required? should be removed?
+     #TODO (JG) [validate-input]  add checkInputSequence here
     emParameters <- setEmParameters(emParameters = opt.em)
     bpParameters <- setBiocParallelParameters(reads, ncore, verbose, demultiplexed)
 	xgb.set.config(nthread = 1)
@@ -193,6 +197,7 @@ bambu <- function(reads, annotations = NULL, genome = NULL, NDR = NULL,
         readClassList <- reads
         isRDSs <- all(sapply(reads, class)=="RangedSummarizedExperiment")
         isBamFiles <- !isRDSs
+        #  #TODO (JG) [warnings] warnings is assigned here but never read again; define proper way of handling warnings in metadata object
         warnings <- NULL
         if(!isRDSs) 
             isBamFiles <- ifelse(!is(reads, "BamFileList"), 

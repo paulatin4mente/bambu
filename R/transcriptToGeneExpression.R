@@ -1,3 +1,7 @@
+# --- transcriptToGeneExpression ---
+# Module: Module 6 — Visualization, comparison & output | transcriptToGeneExpression.R
+# Called by: plotBambu_utilityFunctions.R, readWrite.R
+# Call count: 3 calls, 2 files
 #' Reduce transcript expression to gene expression
 #' @title transcript to gene expression
 #' @param se a summarizedExperiment object from \code{\link{bambu}}

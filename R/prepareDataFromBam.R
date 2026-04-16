@@ -1,8 +1,12 @@
+# --- prepareDataFromBam ---
+# Module: Module 2 — Read processing (per sample) | prepareDataFromBam.R
+# Called by: bambu-processReads.R
+# Call count: 2 calls, 1 files
 #' Function to prepare reads for processing from bam file
 #' @param bamFile bamFile
 #' @inheritParams bambu
 #' @importFrom methods is
-#' @importFrom Rsamtools yieldSize yieldSize<- BamFile isIncomplete 
+#' @importFrom Rsamtools yieldSize yieldSize<- BamFile isIncomplete
 #'     ScanBamParam scanBamFlag
 #' @importFrom GenomicAlignments grglist readGAlignments
 #' @importFrom GenomicRanges width
@@ -82,6 +86,7 @@ prepareDataFromBam <- function(bamFile, yieldSize = NULL, verbose = FALSE,
             mcols(readGrgList[[counter]])$clip3Prime <- pmax(softClip3Prime, hardClip3Prime)
             rev <- as.vector(strand(alignmentInfo) == '-')
             rev2 <- grepl("_-.+of", names(alignmentInfo))
+            # TODO: [POOR NAMING] temp stores clip5Prime for a swap; rename to clip5PrimeTemp or use a direct swap
             temp <- mcols(readGrgList[[counter]])$clip5Prime
             mcols(readGrgList[[counter]])$clip5Prime[rev != rev2] <- mcols(readGrgList[[counter]])$clip3Prime[rev != rev2]
             mcols(readGrgList[[counter]])$clip3Prime[rev != rev2] <- temp[rev != rev2]
@@ -155,7 +160,11 @@ prepareDataFromBam <- function(bamFile, yieldSize = NULL, verbose = FALSE,
 }
 
 
-#' Function to clip sequences 
+# --- clipFunction ---
+# Module: Module 2 — Read processing (per sample) | prepareDataFromBam.R
+# Called by: prepareDataFromBam.R
+# Call count: 4 calls, 1 files
+#' Function to clip sequences
 #' @noRd
 clipFunction <- function(cigarData, grep_pattern, replace_pattern){
     return(suppressWarnings(pmax(0,as.numeric(gsub(grep_pattern,replace_pattern,

@@ -177,6 +177,10 @@ getTranscriptScore = function(rowData, model = NULL, defaultModels){
     return(txScore)
 }
 
+# --- trainBambu ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_scoreReadClasses.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu-processReads_scoreReadClasses.R
+# Call count: 2 calls, 2 files (exported — also user-facing)
 #' Function to train a model for use on other data
 #' @title Function to train a model for use on other data
 #' @description This function train a model for use on other data
@@ -186,14 +190,14 @@ getTranscriptScore = function(rowData, model = NULL, defaultModels){
 #' @param NDR.threshold the effective NDR threshold that bambu will try and match on other samples when using this model
 #' @param verbose if additional messages should be output
 #' Output - A list containing 6 objects which is passed directly into bambu(opt.discovery=list(defaultModels=trainBambu()))
-#'      transcriptModelME - the model for multi-exon transcripts 
-#'      transcriptModelSE - the model for single-exon transcripts 
+#'      transcriptModelME - the model for multi-exon transcripts
+#'      transcriptModelSE - the model for single-exon transcripts
 #'      txScoreBaseline - the txScore used for NDR calibration for multi-exon transcripts
 #'      txScoreBaselineSE - [DEPRECATED] the txScore used for NDR calibration for single-exon transcripts
 #'      lmNDR = lmNDR - the linear model of the reletionship between txScore and NDR used to calculate the baseline for multi-exon transcripts
 #'      lmNDR.SE = lmNDR.SE - the linear model of the reletionship between txScore and NDR used to calculate the baseline for single-exon transcripts
 #'      NDR.threshold - the NDR threshold usd to calculate the txScoreBaseline on the lmNDR (baselineFDR)
-#' @details 
+#' @details
 #' @return It returns a model object to use in \link{bambu}
 #' @export
 trainBambu <- function(rcFile = NULL, min.readCount = 2, nrounds = 50, NDR.threshold = 0.1, verbose = TRUE) {

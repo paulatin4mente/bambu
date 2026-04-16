@@ -1,3 +1,7 @@
+# --- bambu.processReads ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu.R
+# Call count: 1 calls, 1 files
 #' process reads
 #' @param reads path to BAM file(s)
 #' @param annotations path to GTF file or TxDb object
@@ -8,7 +12,7 @@
 #' @param stranded stranded
 #' @param verbose verbose
 #' @importFrom Rsamtools yieldSize BamFileList yieldSize<-
-#' @importFrom methods is 
+#' @importFrom methods is
 #' @importFrom BiocParallel bplapply
 #' @importFrom BiocGenerics basename
 #' @noRd
@@ -17,9 +21,9 @@ bambu.processReads <- function(reads, annotations, genomeSequence,
     stranded=FALSE, verbose=FALSE, isoreParameters = setIsoreParameters(NULL),
     processByChromosome = FALSE, processByBam = TRUE, trackReads = trackReads, fusionMode = fusionMode, 
     demultiplexed = FALSE, cleanReads = FALSE, dedupUMI = FALSE, sampleNames = NULL, barcodesToFilter = NULL) {
-    genomeSequence <- checkInputSequence(genomeSequence)
+    genomeSequence <- checkInputSequence(genomeSequence) #TODO (JG) [validate-input]  move to bambu() input validation
     # ===# create BamFileList object from character #===#
-    if (is(reads, "BamFile")) {
+    if (is(reads, "BamFile")) { #TODO (JG) [validate-input] should be done in bambu in validate input section, minimisa arguments for this call, fix type to BamFileList with names
         if (!is.null(yieldSize)) {
             yieldSize(reads) <- yieldSize
         } else {
@@ -34,14 +38,17 @@ bambu.processReads <- function(reads, annotations, genomeSequence,
             yieldSize <- min(yieldSize(reads))
         }
     } else if (any(!grepl("\\.bam$", reads))) {
-        stop("Bam file is missing from arguments.")
+        stop("Bam file is missing from arguments.")#TODO (JG) [validate-input] should be done in bambu in validate input section
     } else {
         if (is.null(yieldSize)) yieldSize <- NA
         reads <- BamFileList(reads, yieldSize = yieldSize)
         names(reads) <- tools::file_path_sans_ext(BiocGenerics::basename(reads))
     }
-    if(!is.null(sampleNames)){
-        if(length(sampleNames==length(reads))){
+    if(!is.null(sampleNames)){ #TODO (JG) [validate-input] should be done in bambu in validate input section
+        # TODO: [BUG] operator precedence error: length(sampleNames==length(reads)) compares
+        # sampleNames to an integer first, producing a logical vector whose length() is always
+        # >0, so this condition is always TRUE. Should be: length(sampleNames)==length(reads)
+        if(length(sampleNames==length(reads))){#TODO (JG) [bug] see above
             names(reads) <- sampleNames
         } else{
             message("Not enough provided sample names. Using them in order of inputted files and the remaining files will use the file names")
@@ -54,8 +61,8 @@ bambu.processReads <- function(reads, annotations, genomeSequence,
     returnModel <- isoreParameters[["returnModel"]]
     min.exonOverlap <- isoreParameters[["min.exonOverlap"]]
 
-    if(processByBam){
-        readClassList <- bplapply(seq_along(reads), function(i) {
+    if(processByBam){ #TODO (JG) [rewrite-processByBam] processByBam can be default to TRUE, possibly remove the part below to combine read classes across files. redundant, difficult to maintain?
+        readClassList <- bplapply(seq_along(reads), function(i) { #### HERE ####
             bambu.processReadsByFile(bam.file = reads[i],
             genomeSequence = genomeSequence,annotations = annotations,
             stranded = stranded, min.readCount = min.readCount, 
@@ -117,6 +124,10 @@ bambu.processReads <- function(reads, annotations, genomeSequence,
     return(readClassList)
 }
 
+# --- bambu.processReadsByFile ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-processReads.R
+# Call count: 1 calls, 1 files
 #' Preprocess bam files and save read class files
 #' @inheritParams bambu
 #' @importFrom GenomeInfoDb seqlevels seqlevels<- keepSeqlevels
@@ -179,15 +190,16 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations,
         mcols(readGrgList)$sampleID <- index
     }
         
-    # construct read classes for each chromosome seperately 
+    # construct read classes for each chromosome seperately
     if(processByChromosome){
-        se <- lowMemoryConstructReadClasses(readGrgList, genomeSequence, 
+        se <- lowMemoryConstructReadClasses(readGrgList, genomeSequence,
                                                       annotations, stranded, verbose,bam.file)
     } else{
         unlisted_junctions <- unlistIntrons(readGrgList, use.ids = TRUE)
-        uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions, 
+        uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions,
                                                          annotations,genomeSequence, stranded = stranded, verbose = verbose)
-        se <- isore.constructReadClasses(readGrgList, 
+        # TODO: [OTHER] runName = "TODO" is a placeholder; replace with a meaningful sample/run identifier
+        se <- isore.constructReadClasses(readGrgList,
                                               unlisted_junctions, uniqueJunctions, runName = "TODO",
                                               annotations, stranded, verbose)
 
@@ -227,6 +239,10 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations,
     return(se)
 }
 
+# --- bambu.readsByFile ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-processReads.R
+# Call count: 1 calls, 1 files
 #' Preprocess bam files and save read class files
 #' @inheritParams bambu
 #' @importFrom GenomeInfoDb seqlevels seqlevels<- keepSeqlevels
@@ -305,6 +321,10 @@ bambu.readsByFile <- function(bam.file, genomeSequence, annotations,
     return(readGrgList)
 }
 
+# --- constructReadClasses ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-processReads.R
+# Call count: 4 calls, 1 files
 #' Construct read classes
 #' @noRd
 constructReadClasses <- function(readGrgList, genomeSequence, annotations,
@@ -313,14 +333,16 @@ constructReadClasses <- function(readGrgList, genomeSequence, annotations,
     verbose = FALSE, processByChromosome = FALSE, trackReads = FALSE, fusionMode = FALSE){
     
     if(processByChromosome){
-        # construct read classes for each chromosome seperately 
-        se <- lowMemoryConstructReadClasses(readGrgList, genomeSequence, 
+        # construct read classes for each chromosome seperately
+        # TODO: [OTHER] "TODO" passed as runName is a placeholder; replace with a meaningful sample/run identifier
+        se <- lowMemoryConstructReadClasses(readGrgList, genomeSequence,
                                             annotations, stranded, verbose,"TODO", fusionMode)
     } else{
         unlisted_junctions <- unlistIntrons(readGrgList, use.ids = TRUE)
-        uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions, 
+        uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions,
                                                          annotations,genomeSequence, stranded = stranded, verbose = verbose)
-        se <- isore.constructReadClasses(readGrgList, 
+        # TODO: [OTHER] runName = "TODO" is a placeholder; replace with a meaningful sample/run identifier
+        se <- isore.constructReadClasses(readGrgList,
                                               unlisted_junctions, uniqueJunctions, runName = "TODO",
                                               annotations, stranded, verbose)
 
@@ -346,6 +368,10 @@ constructReadClasses <- function(readGrgList, genomeSequence, annotations,
 }
 
 
+# --- lowMemoryConstructReadClasses ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-processReads.R
+# Call count: 2 calls, 1 files
 #' Low memory mode for construct read classes (processByChromosome)
 #' @noRd
 lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence, 
@@ -360,9 +386,10 @@ lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence,
         if(length(readGrgList[[i]]) == 0) return(NULL)
         # create error and strand corrected junction tables
         unlisted_junctions <- unlistIntrons(readGrgList[[i]], use.ids = TRUE)
-        uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions, 
+        uniqueJunctions <- isore.constructJunctionTables(unlisted_junctions,
                                                          annotations,genomeSequence, stranded = stranded, verbose = verbose)
-        se.temp <- isore.constructReadClasses(readGrgList[[i]], 
+        # TODO: [OTHER] runName = "TODO" is a placeholder; replace with a meaningful sample/run identifier (e.g. chromosome name i)
+        se.temp <- isore.constructReadClasses(readGrgList[[i]],
                                               unlisted_junctions, uniqueJunctions, runName = "TODO",
                                               annotations, stranded, verbose)
         return(se.temp)
@@ -373,6 +400,10 @@ lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence,
     return(se)
 }
 
+# --- seqlevelCheckReadsAnnotation ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-processReads.R
+# Call count: 2 calls, 1 files
 #' Check seqlevels for reads and annotations
 #' @importFrom GenomeInfoDb seqlevels
 #' @noRd
@@ -435,6 +466,10 @@ splitReadClassFiles = function(readClassFile){
 }
 
 
+# --- splitReadClassFilesByRC ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 calls, 1 files
 #' Split read class files by RC
 #' @importFrom Matrix
 #' @noRd
@@ -448,6 +483,10 @@ splitReadClassFilesByRC <- function(readClassFile){
     return(counts)
 }
 
+# --- tableFunction ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads.R
+# Called by: bambu-processReads.R
+# Call count: 2 calls, 1 files
 #' table sample IDs list column
 #' @noRd
 tableFunction <- function(xList){

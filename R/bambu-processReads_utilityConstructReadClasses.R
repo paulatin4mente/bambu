@@ -1,3 +1,7 @@
+# --- isore.constructReadClasses ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads.R
+# Call count: 3 calls, 1 files
 #' Isoform reconstruction using genomic alignments
 #' @param readGrgList readGrgList
 #' @param unlisted_junctions unlisted_junctions
@@ -55,12 +59,16 @@ isore.constructReadClasses <- function(readGrgList, unlisted_junctions,
 }
 
 
+# --- constructSplicedReadClasses ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' reconstruct spliced transripts
-#' @importFrom S4Vectors unstrsplit 
+#' @importFrom S4Vectors unstrsplit
 #' @importFrom dplyr select %>%
 #' @importFrom GenomicRanges match
 #' @noRd
-constructSplicedReadClasses <- function(uniqueJunctions, unlisted_junctions, 
+constructSplicedReadClasses <- function(uniqueJunctions, unlisted_junctions,
                                         readGrgList, stranded = FALSE) {
     options(scipen = 999)
     allToUniqueJunctionMatch <- GenomicRanges::match(unlisted_junctions,
@@ -106,6 +114,10 @@ constructSplicedReadClasses <- function(uniqueJunctions, unlisted_junctions,
     return(exonsByReadClass)
 }
 
+# --- correctIntronRanges ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' this functions uses the uniqueJunction table which has reference junctions
 #' and replaces intron coordinates with coordinates from the reference junction
 #' the strand of junctions is also changed to the reference junction strand
@@ -137,6 +149,10 @@ correctIntronRanges <- function(unlisted_junctions, uniqueJunctions,
     return(unlisted_junctions)
 }
 
+# --- correctReadStrandById ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' This function returns the inferred strand based on the number of +(plus) and
 #' -(minus) junctions in each read (majority vote)
 #' @noRd
@@ -152,6 +168,10 @@ correctReadStrandById <- function(strand, id, stranded = FALSE){
 }
 
 
+# --- createReadTable ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' This function generates a table that contains 1 row for each (spliced) read
 #' This table is then summarised into read classes (identical junction patterns)
 #' The readClass table is returned
@@ -162,7 +182,7 @@ correctReadStrandById <- function(strand, id, stranded = FALSE){
 #' @importFrom dplyr tibble %>% group_by n summarise nth order_by arrange mutate
 #'     row_number .groups
 #' @noRd
-createReadTable <- function(unlisted_junctions_start, unlisted_junctions_end, 
+createReadTable <- function(unlisted_junctions_start, unlisted_junctions_end,
     unlisted_junctions_id, readGrgList,readStrand, readConfidence) {
     readRanges <- unlist(range(ranges(readGrgList)), use.names = FALSE)
     intronStartCoordinatesInt <- 
@@ -201,13 +221,21 @@ createReadTable <- function(unlisted_junctions_start, unlisted_junctions_end,
     return(readTable)
 }
 
+# --- getChrFromGrList ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads.R, bambu-processReads_utilityConstructReadClasses.R, prepareDataFromBam.R
+# Call count: 5 calls, 3 files
 #' @noRd
-getChrFromGrList <- function(grl) { 
+getChrFromGrList <- function(grl) {
     return(unlist(seqnames(grl), use.names = FALSE)[cumsum(elementNROWS(grl))]) 
 }
 
+# --- createExonsByReadClass ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' Create Exons By Read Class
-#' @importFrom GenomicRanges makeGRangesListFromFeatureFragments narrow 
+#' @importFrom GenomicRanges makeGRangesListFromFeatureFragments narrow
 #' @noRd
 createExonsByReadClass <- function(readTable){
     exonsByReadClass <- makeGRangesListFromFeatureFragments(
@@ -236,10 +264,14 @@ createExonsByReadClass <- function(readTable){
     return(exonsByReadClass)
 }
 
+# --- constructUnsplicedReadClasses ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' generate exonByReadClass
-#' @importFrom GenomicRanges granges unlist reduce 
+#' @importFrom GenomicRanges granges unlist reduce
 #' @noRd
-constructUnsplicedReadClasses <- function(reads.singleExon, annotations, 
+constructUnsplicedReadClasses <- function(reads.singleExon, annotations,
         readClassListSpliced, stranded, verbose = FALSE){
     start.ptm <- proc.time()
     referenceExons <- unique(c(granges(unlist(
@@ -290,11 +322,15 @@ constructUnsplicedReadClasses <- function(reads.singleExon, annotations,
 
 
 
+# --- getUnsplicedReadClassByReference ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 2 calls, 1 files
 #' reconstruct read classes using unspliced reads that fall
 #' within exons from annotations
 #' @importFrom GenomicRanges GRanges relist
 #' @importFrom dplyr %>% select group_by summarise .groups mutate cut_group_id
-#'     ungroup distinct 
+#'     ungroup distinct
 #' @noRd
 getUnsplicedReadClassByReference <- function(granges, grangesReference,
     confidenceType = "unspliced", stranded = TRUE) {
@@ -353,11 +389,15 @@ getUnsplicedReadClassByReference <- function(granges, grangesReference,
     return(exByReadClassUnspliced)
 }
 
+# --- initiateHitsDF ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 1 calls, 1 files
 #' initiate the hits dataframe
 #' @param hitsWithin hitsWithin
 #' @param grangesReference grangesReference
 #' @param stranded stranded
-#' @importFrom dplyr as_tibble 
+#' @importFrom dplyr as_tibble
 #' @noRd
 initiateHitsDF <- function(hitsWithin, grangesReference, stranded) {
     hitsDF <- as_tibble(hitsWithin)
@@ -374,8 +414,12 @@ initiateHitsDF <- function(hitsWithin, grangesReference, stranded) {
     return(hitsDF)
 }
 
+# --- assignGeneIds ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu-processReads_scoreReadClasses.R
+# Call count: 2 calls, 2 files
 #' Main function which calls other gene id assigner functions
-#' Returns a list of gene ids for each read class and an 
+#' Returns a list of gene ids for each read class and an
 #' index of which genes are novel
 #' @param grl a GrangesList object with read classes
 #' @param annotations a GrangesList object with annotations
@@ -438,6 +482,10 @@ assignGeneIds <-  function(grl, annotations, min.exonOverlap = 10, fusionMode = 
 }
 
 
+# --- assignGeneIdsByReference ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R
+# Call count: 5 calls, 1 files
 #' Return gene ids for read classes which overlap
 #' with known annotations
 #' @param grl a GrangesList object with read classes
@@ -447,6 +495,7 @@ assignGeneIdsByReference <- function(grl, annotations, min.exonOverlap = 10,
                                      fusionMode=FALSE, prefix = 'Bambu') {
     # (1) assign gene Ids based on first intron match to annotations
     geneRanges <- reducedRangesByGenes(annotations)
+    # TODO: [POOR NAMING] ov is a Hits object from findOverlaps; rename to geneOverlaps for clarity
     ov=findOverlaps(grl, geneRanges, minoverlap = min.exonOverlap)
     geneIds <- rep(NA, length(grl))
     uniqueHits <- which(queryHits(ov) %in% which(countQueryHits(ov)==1))
@@ -479,6 +528,7 @@ assignGeneIdsByReference <- function(grl, annotations, min.exonOverlap = 10,
     return(geneIds)
 }
 
+# TODO: [UNUSED CODE] entire block below is a commented-out old version of assignGeneIdsByReference; should be deleted
 # assignGeneIdsByReference <- function(grl, annotations, min.exonOverlap = 10,
 #                                      fusionMode=FALSE, prefix = 'Bambu') {
 #     # (1) assign gene Ids based on first intron match to annotations
@@ -517,8 +567,12 @@ assignGeneIdsByReference <- function(grl, annotations, min.exonOverlap = 10,
 #     return(geneIds)
 # }
 
-#' Create new gene ids for groups of overlapping read classes which 
-#' don't overlap with known annotations. 
+# --- assignGeneIdsNoReference ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityConstructReadClasses.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu-processReads_utilityConstructReadClasses.R
+# Call count: 3 calls, 2 files
+#' Create new gene ids for groups of overlapping read classes which
+#' don't overlap with known annotations.
 #' @param grl a GrangesList object with read classes
 #' @noRd
 assignGeneIdsNoReference <- function(grl, prefix = 'Bambu') {
@@ -577,6 +631,7 @@ assignGeneIdsNonAssigned = function(geneTxMap, exonTxMap, geneExonMap,
         refGeneTxMap$newGeneId), refGeneTxMap) %>% distinct()
     refGenExonMap <- left_join(refGeneTxMap, exonTxMap, by = "newTxId") %>% 
         dplyr::select(newGeneId, newExonId) %>% distinct()
+    # TODO: [POOR NAMING] length_tmp is a convergence sentinel for the while loop; rename to prevLength or prevExonMapSize
     length_tmp = 0
     while(length_tmp<nrow(refGenExonMap)) {
         length_tmp=nrow(refGenExonMap)

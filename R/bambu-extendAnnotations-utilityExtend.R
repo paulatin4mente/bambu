@@ -1,3 +1,7 @@
+# --- isore.extendAnnotations ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations.R
+# Call count: 1 call, 1 file
 #' Extend annotations
 #' @inheritParams bambu
 #' @noRd
@@ -56,6 +60,10 @@ isore.extendAnnotations <- function(combinedTranscripts, annotationGrangesList,
   }
 }
 
+# --- filterTranscripts ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' filter transcripts by read counts
 #' @noRd
 filterTranscripts <- function(combinedTranscripts, min.sampleNumber){
@@ -75,9 +83,13 @@ filterTranscripts <- function(combinedTranscripts, min.sampleNumber){
   return(combinedTranscripts)
 }
 
+# --- filterTranscriptsByAnnotation ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' calculate minimum equivalent classes for extended annotations
-#' @importFrom dplyr select as_tibble %>% mutate_at mutate group_by 
-#'     ungroup .funs .name_repair vars 
+#' @importFrom dplyr select as_tibble %>% mutate_at mutate group_by
+#'     ungroup .funs .name_repair vars
 #' @noRd
 filterTranscriptsByAnnotation <- function(rowDataCombined, annotationGrangesList,
                                           exonRangesCombined, prefix,  remove.subsetTx, 
@@ -154,6 +166,10 @@ filterTranscriptsByAnnotation <- function(rowDataCombined, annotationGrangesList
   return(extendedAnnotationRanges)
 }
 
+# --- recommendNDR ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' calculates an expected NDR based on the annotations'
 #' @noRd
 recommendNDR <- function(combinedTranscripts, baselineFDR = 0.1, NDR = NULL, defaultModels = defaultModels, verbose = FALSE){
@@ -161,7 +177,7 @@ recommendNDR <- function(combinedTranscripts, baselineFDR = 0.1, NDR = NULL, def
     combinedTranscripts <- combinedTranscripts[combinedTranscripts$maxTxScore.noFit >=0, ] #ignore filtered out read classes
     equal <- combinedTranscripts$readClassType == "equal:compatible"
     equal[is.na(equal)] <- FALSE
-    #add envirnment so poly() works
+    #add envirnment so poly() works # TODO: [OTHER] typo: "envirnment" should be "environment"
     attr(defaultModels$lmNDR[["terms"]], ".Environment") <- new.env(parent = parent.env(globalenv()))
     baseline <- predict(defaultModels$lmNDR, newdata=data.frame(NDR=baselineFDR))
     attr(defaultModels$lmNDR[["terms"]], ".Environment") <- c()
@@ -195,10 +211,14 @@ recommendNDR <- function(combinedTranscripts, baselineFDR = 0.1, NDR = NULL, def
     return(NDR)
 }
 
+# --- recommendNDR.onAnnotations ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 recommendNDR.onAnnotations <- function(annotations, prefix = "Bambu", baselineFDR = 0.1, defaultModels2 = defaultModels2){
     mcols <- mcols(annotations)[!is.na(mcols(annotations)$maxTxScore),]
     equal <- !grepl(prefix, mcols$TXNAME)
-    #add envirnment so poly() works
+    #add envirnment so poly() works # TODO: [OTHER] typo: "envirnment" should be "environment"
     attr(defaultModels2$lmNDR[["terms"]], ".Environment") <- new.env(parent = parent.env(globalenv()))
     baseline <- predict(defaultModels2$lmNDR, newdata=data.frame(NDR=baselineFDR))
     attr(defaultModels2$lmNDR[["terms"]], ".Environment") <- c()
@@ -210,7 +230,11 @@ recommendNDR.onAnnotations <- function(annotations, prefix = "Bambu", baselineFD
 }
 
 
-#' Calculate NDR based on transcripts 
+# --- calculateNDROnTranscripts ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
+#' Calculate NDR based on transcripts
 #' @noRd
 calculateNDROnTranscripts <- function(combinedTranscripts, useTxScore = FALSE){
       # calculate and filter by NDR
@@ -228,7 +252,11 @@ calculateNDROnTranscripts <- function(combinedTranscripts, useTxScore = FALSE){
     return(combinedTranscripts)
 }
 
-#' calculates the minimum NDR for each score 
+# --- calculateNDR ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu-processReads_scoreReadClasses.R
+# Call count: 5 calls, 2 files
+#' calculates the minimum NDR for each score
 #' @noRd
 calculateNDR <- function(score, labels){
     scoreOrder <- order(score, decreasing = TRUE) 
@@ -238,10 +266,14 @@ calculateNDR <- function(score, labels){
     return(NDR[order(scoreOrder)]) #return to original order
 }
 
+# --- makeExonsIntronsSpliced ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' generate exon/intron ByReadClass objects
 #' @importFrom GenomicRanges makeGRangesListFromFeatureFragments
 #' @importFrom GenomeInfoDb seqlevels seqlevels<-
-#' @importFrom dplyr select distinct 
+#' @importFrom dplyr select distinct
 #' @noRd
 makeExonsIntronsSpliced <- function(transcriptsTibble,annotationSeqLevels){
   if(all(is.na(transcriptsTibble$intronStarts))){
@@ -264,6 +296,10 @@ makeExonsIntronsSpliced <- function(transcriptsTibble,annotationSeqLevels){
 }
 
 
+# --- createExonByReadClass ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' create exonsByReadClass
 #' @param seFilteredSpliced a SummarizedExperiment object
 #' for filtered spliced reads
@@ -304,6 +340,10 @@ createExonByReadClass <- function(transcriptsTibble, annotationSeqLevels) {
 
 
 
+# --- addNewSplicedReadClasses ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' extended annotations for spliced reads
 #' @noRd
 addNewSplicedReadClasses <- function(combinedTranscriptRanges, 
@@ -367,6 +407,10 @@ addNewSplicedReadClasses <- function(combinedTranscriptRanges,
 }
 
 
+# --- updateWIntronMatches ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' update classificationTable
 #' @importFrom GenomicRanges match
 #' @noRd
@@ -421,6 +465,10 @@ updateWIntronMatches <- function(unlistedIntrons, unlistedIntronsAnnotations,
 
 
 
+# --- assignGeneIDbyMaxMatch ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' assign gene id by maximum match
 #' @importFrom dplyr as_tibble %>% group_by summarise filter ungroup
 #' @noRd
@@ -464,6 +512,10 @@ assignGeneIDbyMaxMatch <- function(unlistedIntrons,
 }
 
 
+# --- calculateDistToAnnotation ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 2 calls, 1 file
 #' Calculate distance from read class to annotation
 #' @param exByTx exByTx
 #' @param exByTxRef exByTxRef
@@ -523,6 +575,10 @@ calculateDistToAnnotation <- function(exByTx, exByTxRef, maxDist = 35,
 }
 
 
+# --- genFilteredAnTable ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 3 calls, 1 file
 #' generate filtered annotation table
 #' @param spliceOverlaps an output from  findSpliceOverlapsByDist()
 #' @param primarySecondaryDist default 5
@@ -577,6 +633,10 @@ genFilteredAnTable <- function(spliceOverlaps, primarySecondaryDist = 5,
   return(txToAnTableFiltered)
 }
 
+# --- addNewUnsplicedReadClasses ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' extended annotations for unspliced reads
 #' @param se a summarized experient object
 #' @param seFilteredSpliced seFilteredSpliced
@@ -642,13 +702,18 @@ addNewUnsplicedReadClasses <- function(rowDataFilteredUnspliced,  rowDataFiltere
               "exonRangesCombined" = exonRangesCombined))
 }
 
+# --- includeOverlapReadClass ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls (exported or not called internally)
 #' calculate distance between first and last exon matches
 #' @param candidateList candidateList
 #' @param filteredOverlapList filteredOverlapList
-#' @importFrom dplyr select rename %>% left_join group_by filter 
+#' @importFrom dplyr select rename %>% left_join group_by filter
 #'     ungroup distinct
 #' @noRd
 includeOverlapReadClass <- function(candidateList, filteredOverlapList) {
+  # TODO: [POOR NAMING] temp stores a filtered/joined candidate list; rename to candidatesWithOverlaps or similar
   temp <- left_join(candidateList, filteredOverlapList,
                     by = c("subjectHits" = "queryHits")) %>%
     group_by(queryHits) %>%
@@ -660,6 +725,10 @@ includeOverlapReadClass <- function(candidateList, filteredOverlapList) {
   return(temp)
 }
 
+# --- combindRowDataWithRanges ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 3 calls, 1 file
 #' extract the important row range columns and add them to the ranges for final output
 #' @noRd
 combindRowDataWithRanges <- function(rowDataCombinedFiltered, exonRangesCombinedFiltered){
@@ -683,6 +752,10 @@ combindRowDataWithRanges <- function(rowDataCombinedFiltered, exonRangesCombined
     return(extendedAnnotationRanges)
 }
 
+# --- combineWithAnnotations ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' combine annotations with predicted transcripts
 #' @noRd
 combineWithAnnotations <- function(rowDataCombinedFiltered, 
@@ -724,6 +797,10 @@ combineWithAnnotations <- function(rowDataCombinedFiltered,
   return(extendedAnnotationRanges)
 }
 
+# --- calculateRelSubsetCount ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' calculate relative subset read count after filtering (increase speed, subsets are not considered here)'
 #' @noRd
 calculateRelSubsetCount <- function(extendedAnnotationRanges, minEq, min.readFractionByEqClass){
@@ -740,6 +817,10 @@ calculateRelSubsetCount <- function(extendedAnnotationRanges, minEq, min.readFra
   return(extendedAnnotationRanges)
 }
 
+# --- isore.estimateDistanceToAnnotations ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' Estimate distance between read class and annotations
 #' @param seReadClass seReadClass
 #' @inheritParams bambu
@@ -784,6 +865,10 @@ isore.estimateDistanceToAnnotations <- function(seReadClass,
 
 
 
+# --- addGeneIdsToReadClassTable ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 1 call, 1 file
 #' generate readClassTable
 #' @importFrom dplyr select filter distinct unlist group_by mutate %>% ungroup
 #'     left_join
@@ -822,6 +907,10 @@ addGeneIdsToReadClassTable <- function(readClassTable, distTable,
   return(readClassTable)
 }
 
+# --- setNDR ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu.R, readWrite.R
+# Call count: 2 calls, 2 files
 #' Function to change NDR threshold on extendedAnnotations
 #' @title Function to change NDR threshold on extendedAnnotations
 #' @description This function train a model for use on other data
@@ -864,6 +953,7 @@ setNDR <- function(extendedAnnotations, NDR = NULL, includeRef = FALSE, prefix =
             grepl(prefix, mcols(metadata(extendedAnnotations)$lowConfidenceTranscripts)$TXNAME))     
     }
   
+  # TODO: [POOR NAMING] temp stores annotations being swapped between low/high confidence sets; rename to swappedAnnotations or similar
   temp <- c(metadata(extendedAnnotations)$lowConfidenceTranscripts[!toAdd], extendedAnnotations[toRemove])
   extendedAnnotations <- c(extendedAnnotations[!toRemove], metadata(extendedAnnotations)$lowConfidenceTranscripts[toAdd])
   metadata(extendedAnnotations)$lowConfidenceTranscripts <- temp
@@ -878,6 +968,10 @@ setNDR <- function(extendedAnnotations, NDR = NULL, includeRef = FALSE, prefix =
 }
 
 
+# --- isore.extendAnnotations.clusters ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations-utilityExtend.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' Extend annotations by clusters
 #' @noRd
 isore.extendAnnotations.clusters <- function(readClassList, annotations, clusters, NDR, isoreParameters, stranded, bpParameters, fusionMode, verbose = FALSE){

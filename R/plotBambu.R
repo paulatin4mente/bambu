@@ -1,3 +1,7 @@
+# --- plotBambu ---
+# Module: Module 6 — Visualization, comparison & output | plotBambu.R
+# Called by: (not called anywhere — user-facing entry point)
+# Call count: 0 internal calls (exported; in-repo mentions are in roxygen docs)
 #' plotSEOuptut
 #' @title plot.bambu
 #' @param se An summarized experiment object obtained from \code{\link{bambu}}

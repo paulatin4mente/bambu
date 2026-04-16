@@ -1,3 +1,7 @@
+# --- isore.constructJunctionTables ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads.R
+# Call count: 3 calls, 1 files
 #' Isoform reconstruction using genomic alignments
 #' @param unlisted_junctions unlisted_junctions
 #' @param annotations annotations
@@ -41,6 +45,10 @@ isore.constructJunctionTables <- function(unlisted_junctions, annotations,
 
 
 
+# --- unlistIntrons ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads.R, bambu-processReads_scoreReadClasses.R, bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 6 calls, 3 files
 #' Get unlisted intron ranges from exon ranges list
 #' @importFrom GenomicRanges GRanges
 #' @noRd
@@ -65,6 +73,10 @@ unlistIntrons <- function(x, use.ids = TRUE, use.names = FALSE) {
 
 
 
+# --- createJunctionTable ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 1 calls, 1 files
 #' Create Junction tables from unlisted junction granges
 #' @importFrom BiocGenerics unstrand
 #' @importFrom IRanges shift
@@ -111,6 +123,10 @@ createJunctionTable <- function(unlisted_junctions,
     return(uniqueJunctions)
 }
 
+# --- spliceStrand ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 1 calls, 1 files
 #' @param motif motif
 #' @noRd
 spliceStrand <- function(motif) {
@@ -124,6 +140,10 @@ spliceStrand <- function(motif) {
 }
 
 
+# --- junctionStrandCorrection ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 1 calls, 1 files
 #' JUNCTIONSTRANDCORRECTION
 #' @noRd
 junctionStrandCorrection <- function(uniqueJunctions, unlisted_junctions,
@@ -164,6 +184,10 @@ junctionStrandCorrection <- function(uniqueJunctions, unlisted_junctions,
 }
 
 
+# --- evalAnnotationOverlap ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 2 calls, 1 files
 #' Evaluate annoation overlap
 #' @importFrom GenomicRanges match
 #' @noRd
@@ -174,8 +198,12 @@ evalAnnotationOverlap <- function(intronRanges, uniqueAnnotatedIntrons,
 }
 
 
-#' This function assigns a strand to each read based on the majority of 
-#' junctions. The strand of the junctions is infered by the sequence in 
+# --- updateStrandScoreByRead ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 1 calls, 1 files
+#' This function assigns a strand to each read based on the majority of
+#' junctions. The strand of the junctions is infered by the sequence in
 #' createJunctionTables
 #' @noRd
 updateStrandScoreByRead <- function(unlisted_junctions, uniqueJunctions){
@@ -210,7 +238,11 @@ updateStrandScoreByRead <- function(unlisted_junctions, uniqueJunctions){
 
 
 
-#' update junctions object if strand prediction improves overlap 
+# --- updateJunctionwimprove ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityCreateJunctionTables.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 1 calls, 1 files
+#' update junctions object if strand prediction improves overlap
 #' with annotations
 #' @param annotatedIntronNumber annotatedIntronNumber
 #' @param uniqueJunctions uniqueJunctions

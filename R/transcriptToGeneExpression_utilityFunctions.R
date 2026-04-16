@@ -1,4 +1,8 @@
 
+# --- rename_duplicatedNames ---
+# Module: Module 6 — Visualization, comparison & output | transcriptToGeneExpression_utilityFunctions.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls (exported or not called internally)
 #' rename runnames when there are duplicated names
 #' @title rename_duplicatedNames
 #' @param runnames sample names
@@ -23,8 +27,12 @@ rename_duplicatedNames <- function(runnames){
 }
 
 
+# --- reducedRangesByGenes ---
+# Module: Module 6 — Visualization, comparison & output | transcriptToGeneExpression_utilityFunctions.R
+# Called by: bambu-processReads_utilityConstructReadClasses.R, transcriptToGeneExpression.R
+# Call count: 2 calls, 2 files
 #' From tx ranges to gene ranges
-#' @importFrom GenomicRanges reduce 
+#' @importFrom GenomicRanges reduce
 #' @noRd
 reducedRangesByGenes <- function(annotations) {
     annotations <- annotations[order(mcols(annotations)$GENEID)]

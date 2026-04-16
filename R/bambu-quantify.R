@@ -1,3 +1,7 @@
+# --- bambu.quantify ---
+# Module: Module 5 — Quantification | bambu-quantify.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' Perform quantification
 #' @inheritParams bambu
 #' @import data.table
@@ -24,6 +28,10 @@ bambu.quantify <- function(readClassDt, countMatrix, incompatibleCountMatrix, tx
     return(seOutput)
 }
 
+# --- bambu.quantDT ---
+# Module: Module 5 — Quantification | bambu-quantify.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' Process data.table object
 #' @param readClassDt A data.table object
 #' @inheritParams bambu

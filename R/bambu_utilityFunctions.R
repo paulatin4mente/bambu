@@ -1,5 +1,9 @@
 
 ## Functions to set basic parameters and check inputs
+# --- setBiocParallelParameters ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' setBiocParallelParameters
 #' @importFrom BiocParallel bpparam
 #' @noRd
@@ -13,6 +17,10 @@ setBiocParallelParameters <- function(reads, ncore, verbose, demultiplexed){
 }
 
 
+# --- setIsoreParameters ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu-processReads.R, bambu-quantify.R, bambu.R
+# Call count: 3 calls, 3 files
 #' setIsoreparameters
 #' @noRd
 setIsoreParameters <- function(isoreParameters){
@@ -41,6 +49,10 @@ setIsoreParameters <- function(isoreParameters){
 }
 
 
+# --- setEmParameters ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' setEmParameters
 #' @noRd
 setEmParameters <- function(emParameters){
@@ -50,6 +62,10 @@ setEmParameters <- function(emParameters){
     return(emParameters)
 }
 
+# --- updateParameters ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu_utilityFunctions.R
+# Call count: 2 calls, 1 file
 #' check parameters for isore and em
 #' @param Parameters parameters inputted by user
 #' @param Parameters.default default parameters
@@ -65,6 +81,10 @@ updateParameters <- function(Parameters, Parameters.default) {
     return(Parameters)
 }
 
+# --- checkInputs ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' check valid inputs
 #' @param annotations path to GTF file or TxDb object
 #' @param reads path to BAM file(s)
@@ -92,10 +112,9 @@ checkInputs <- function(annotations, reads, readClass.outputDir, genomeSequence,
                 message("If you are running bambu multiple times we recommend ",
                 "processing your annotation file first with ",
                 "annotations = prepareAnnotations(gtf.file)")
-            annotations <- prepareAnnotations(annotations)
+            annotations <- prepareAnnotations(annotations)  #TODO (JG) [validate-input]  this line should be moved outside of checkInputs
         } else {
             stop("The annotations is not a GRangesList object a TxDb or a path to a .gtf.")
-        }
         if(discovery & (any(grepl("^BambuGene", names(annotations))) | 
             any(grepl("^BambuTx", mcols(annotations)$TXNAME)))){
                 message("Detected Bambu derived annotations in the annotations. ", 
@@ -103,7 +122,8 @@ checkInputs <- function(annotations, reads, readClass.outputDir, genomeSequence,
                 "to prevent ambigious id assignment.")
         }
     } else {
-        stop("Annotations is missing.")
+        stop("Annotations is missing.")   #TODO (JG) [validate-input]   Should just return  GRangesList() and remove the corresponding code line in bambu(). should be done in separate function
+        }
     }
     # ===# Check whether provided readClass.outputDir exists  #===#
     if (!is.null(readClass.outputDir)) {
@@ -118,7 +138,8 @@ checkInputs <- function(annotations, reads, readClass.outputDir, genomeSequence,
         } else{
             # ===# Check whether provided read files are all in the same format (.bam or .rds) #===#
             isRDSs <- all(sapply(reads, class)=="RangedSummarizedExperiment")
-            # there is a bug here, when reads is NULL, isRDSs == TRUE
+            # TODO: [BUG] when reads is NULL, sapply returns an empty vector and all() vacuously returns TRUE,
+            # so isRDSs is incorrectly set to TRUE; add an explicit is.null(reads) guard before this line
             if(!isRDSs){
                 if (!all(grepl(".bam$", reads)) & !all(grepl(".rds$", reads)))
                     stop("Reads should either be: a vector of paths to .bam files, ", 
@@ -174,12 +195,16 @@ checkInputs <- function(annotations, reads, readClass.outputDir, genomeSequence,
 }
 
 
+# --- checkInputSequence ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu-processReads.R
+# Call count: 1 call, 1 file
 #' Function to create a object that can be queried by getSeq
 #' Either from fa file, or BSGenome object
 #' @importFrom methods is
 #' @importFrom Rsamtools FaFile
 #' @noRd
-checkInputSequence <- function(genomeSequence) {
+checkInputSequence <- function(genomeSequence) { #TODO (JG) [validate-input]  checkInputSequence should be called from Bambu not from processReads as part of input validation and transformation
     if (is.null(genomeSequence)) stop("Reference genome sequence is missing,
         please provide fasta file or BSgenome name, see available.genomes()")
     if(is.character(genomeSequence)){
@@ -209,9 +234,13 @@ checkInputSequence <- function(genomeSequence) {
 }
 
 
+# --- handleWarnings ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls
 #' Function that gathers warnings from several read class lists and outputs the counts
 #' @noRd
-handleWarnings <- function(readClassList, verbose){
+handleWarnings <- function(readClassList, verbose){ #TODO (JG) [warnings] implement way to handle warnings as object not as stdout
     warnings <- list()
     sampleNames <- c()
     for(i in seq_along(readClassList)){
@@ -241,8 +270,12 @@ handleWarnings <- function(readClassList, verbose){
     return(warnings)
 }
 
+# --- calculateDistTable ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' Calculate the dist table used for Bambu Quantification
-calculateDistTable <- function(readClassList, annotations, isoreParameters, verbose, returnDistTable){
+calculateDistTable <- function(readClassList, annotations, isoreParameters, verbose, returnDistTable){ #TODO (JG) [bambu-modules] this function should be in assignDist module, not called anywhere else
     readClassDist <- isore.estimateDistanceToAnnotations(readClassList, annotations,
                                                             min.exonDistance = isoreParameters[["min.exonDistance"]],
                                                             min.primarySecondaryDist = isoreParameters[['min.primarySecondaryDist']],
@@ -260,6 +293,10 @@ calculateDistTable <- function(readClassList, annotations, isoreParameters, verb
         return(readClassDist)
 }
 
+# --- combineCountSes ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' Combine combined count se object from multiple samples, cells or spatial locations
 #' @noRd
 combineCountSes <- function(countsSe, colDataList, annotations){
@@ -294,6 +331,10 @@ combineCountSes <- function(countsSe, colDataList, annotations){
     return(combinedCountsSe)
 }
 
+# --- generateColData ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' Generate the colData using the external sampleMetadata.csv provided by the user in the sampleMetadata argument
 #' @param readClassList A list object containingmetadata about read classes.
 #' @param sampleMetadata A path to a CSV file or NULL/NA if there is no metadata for the sample.
@@ -301,7 +342,7 @@ combineCountSes <- function(countsSe, colDataList, annotations){
 #'
 #' @return A DataFrame containing colData for the sample.
 #' @export
-generateColData <- function(readClassList, sampleMetadata, demultiplexed) {
+generateColData <- function(readClassList, sampleMetadata, demultiplexed) { #TODO (JG) [bambu-modules] this function should be in assignDist module, not called anywhere else
   sampleMetadataDf <- if (is.null(sampleMetadata) || is.na(sampleMetadata)) {
     if (demultiplexed) tibble(barcode = character()) else tibble(sampleName = character())
   } else {
@@ -330,8 +371,12 @@ generateColData <- function(readClassList, sampleMetadata, demultiplexed) {
 }
 
 # Quick wrapper function (https://stackoverflow.com/questions/13273833/merging-multiple-data-tables)
-#' @noRd 
-merge_wrapper <- function(x,y){
+# --- merge_wrapper ---
+# Module: Module 4 — Read class to transcript assignment | bambu_utilityFunctions.R
+# Called by: (none)
+# Call count: 0 internal calls (exported or not called internally)
+#' @noRd
+merge_wrapper <- function(x,y){ #TODO (JG) [unused-code] code is not used, remove?
     merge.data.table(x,y,by = "GENEID",all=TRUE)
 }
 

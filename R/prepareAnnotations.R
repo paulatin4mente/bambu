@@ -1,3 +1,7 @@
+# --- prepareAnnotations ---
+# Module: Module 1 — Annotation preparation | prepareAnnotations.R
+# Called by: bambu_utilityFunctions.R, readWrite.R
+# Call count: 2 calls, 2 files (exported — also called by user)
 #' @title prepare reference annotations for long read RNA-Seq analysis with Bambu
 #' @param x A path to gtf file or a \code{TxDb} object.
 #' @details This function creates a reference annotation object which is used for transcript 

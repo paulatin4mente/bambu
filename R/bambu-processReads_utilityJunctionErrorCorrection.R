@@ -1,3 +1,7 @@
+# --- junctionErrorCorrection ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityCreateJunctionTables.R
+# Call count: 1 calls, 1 files
 #' correct junction from prediction
 #' @param uniqueJunctions uniqueJunctions
 #' @param verbose verbose
@@ -41,6 +45,10 @@ junctionErrorCorrection <- function(uniqueJunctions, verbose, returnModel = TRUE
     return(uniqueJunctions)
 }
 
+# --- findUniqueJunctions ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 2 calls, 1 files
 #' find unique junctions
 #' @noRd
 findUniqueJunctions <- function(uniqueJunctions, junctionModel, verbose){
@@ -59,10 +67,14 @@ findUniqueJunctions <- function(uniqueJunctions, junctionModel, verbose){
 
 
 
+# --- testSpliceSites ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 1 calls, 1 files
 #' Test splice sites
 #' @importFrom stats model.matrix
 #' @noRd
-testSpliceSites <- function(data, splice = "Start", prime = "start", 
+testSpliceSites <- function(data, splice = "Start", prime = "start",
                             junctionModel = NULL, verbose = FALSE){ 
     distSplice.prime <- data[, paste0("dist",splice,".",prime)]
     spliceStrand <- data[, "spliceStrand"]
@@ -79,6 +91,9 @@ testSpliceSites <- function(data, splice = "Start", prime = "start",
         mySet.all <- which((distSplice.prime != 0) & (spliceStrand != "*") &
             (spliceScore > 0) & (abs(distSplice.prime) < 15))
     }
+    # TODO: [POOR NAMING] predictionSplice.prime, predSplice.prime, and predictionsSplice.prime (line ~105)
+    # are three near-identical names used for different things (predictions array, model object, second array);
+    # rename to e.g. spliceScoreArray, splicePrimeModel, and spliceScoreArray2 for clarity
     predictionSplice.prime <- rep(NA, nrow(data))
     if (any(mySet.all)) {
         mySet.training <- 
@@ -112,6 +127,10 @@ testSpliceSites <- function(data, splice = "Start", prime = "start",
     }
 }
 
+# --- createSpliceMetadata ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 1 calls, 1 files
 #' Create metadata for splice information
 #' @noRd
 createSpliceMetadata <- function(annotatedJunctions, splice){
@@ -146,6 +165,10 @@ createSpliceMetadata <- function(annotatedJunctions, splice){
     return(metadata)
 }
 
+# --- predictSpliceJunctions ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 2 calls, 1 files
 #' Predict splicing junctions
 #' @importFrom GenomicRanges GRanges
 #' @noRd
@@ -197,11 +220,15 @@ predictSpliceJunctions <- function(annotatedJunctions, junctionModel=NULL,
     return(list(annotatedJunctions, junctionModel))
 }
 
+# --- fitXGBoostModel ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_scoreReadClasses.R, bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 3 calls, 2 files
 #' Fit xgboost model
 #' @importFrom xgboost xgboost
 #' @importFrom stats fisher.test
 #' @noRd
-fitXGBoostModel <- function(labels.train, data.train, nrounds = 50, 
+fitXGBoostModel <- function(labels.train, data.train, nrounds = 50,
                             show.cv=TRUE, maxSize.cv=10000){
     if (show.cv) {
         mySample <- sample(seq_along(labels.train),
@@ -236,9 +263,13 @@ fitXGBoostModel <- function(labels.train, data.train, nrounds = 50,
     return(cv.fit)
 }
 
+# --- useRefJunctionForConflict ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 1 calls, 1 files
 #' if conflict (very rare) use reference junction with higher read count/score
 #' @noRd
-useRefJunctionForConflict <- function(junctions, candidateJunctionsMinus, 
+useRefJunctionForConflict <- function(junctions, candidateJunctionsMinus,
                                       candidateJunctionsPlus){
     conflictJunctions <- junctions[names(candidateJunctionsMinus[which(!is.na(
         candidateJunctionsMinus$mergedHighConfJunctionId))][which(
@@ -273,6 +304,10 @@ useRefJunctionForConflict <- function(junctions, candidateJunctionsMinus,
     return(junctions)
 }
 
+# --- findJunctionsByStrand ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 2 calls, 1 files
 #' find junctions by plus and minus strand
 #' @noRd
 findJunctionsByStrand <- function(candidateJunctions,highConfidentJunctionSet,
@@ -313,6 +348,10 @@ findJunctionsByStrand <- function(candidateJunctions,highConfidentJunctionSet,
     return(candidateJunctions)
 }
 
+# --- findHighConfidenceJunctions ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 1 calls, 1 files
 #' this function adds "mergedHighConfJunctionId" to the junciton list
 #' which contains the ID of the most likely high confident junction that
 #' each junction originates from
@@ -365,6 +404,10 @@ findHighConfidenceJunctions <- function(junctions, junctionModel,
     return(junctions[,'mergedHighConfJunctionId'])
 }
 
+# --- evaluatePerformance ---
+# Module: Module 2 — Read processing (per sample) | bambu-processReads_utilityJunctionErrorCorrection.R
+# Called by: bambu-processReads_scoreReadClasses.R, bambu-processReads_utilityJunctionErrorCorrection.R
+# Call count: 3 calls, 2 files
 #' Evaluate performance
 #' @noRd
 evaluatePerformance <- function(labels, scores, decreasing = TRUE){

@@ -1,4 +1,8 @@
 ## Internal functions for bambu =========================
+# --- bambu.extendAnnotations ---
+# Module: Module 3 — Annotation extension (cross-sample) | bambu-extendAnnotations.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu.R
+# Call count: 3 calls, 2 files
 #' Extend annotations
 #' @inheritParams bambu
 #' @noRd

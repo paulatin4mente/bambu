@@ -1,13 +1,17 @@
+# --- writeBambuOutput ---
+# Module: Module 6 — Visualization, comparison & output | readWrite.R
+# Called by: (not called anywhere — user-facing entry point)
+# Call count: 0 internal calls (exported; in-repo mentions are in roxygen docs)
 #' @title Write Bambu results to GTF and transcript/gene-count files
-#' @param se a \code{\link{SummarizedExperiment}} object 
+#' @param se a \code{\link{SummarizedExperiment}} object
 #' from \code{\link{bambu}}.
-#' @param path the destination of the output files 
+#' @param path the destination of the output files
 #' (gtf, transcript counts, and gene counts)
 #' @param prefix the prefix of the output files
-#' @details The function will write the output from Bambu to files. The 
-#' annotations will be written to a .gtf file, transcript counts (total counts, 
+#' @details The function will write the output from Bambu to files. The
+#' annotations will be written to a .gtf file, transcript counts (total counts,
 #' CPM, full-length counts, partial-length counts, and unique counts) and gene counts
-#' will be written to .txt files.  
+#' will be written to .txt files.
 #' @export
 #' @examples
 #' se <- readRDS(system.file("extdata",
@@ -38,6 +42,7 @@ writeBambuOutput <- function(se, path, prefix = "", outputExtendedAnno = TRUE,
         for(d in names(assays(se))){
             writeCountsOutput(se, varname=d,
                             feature='transcript',outdir, prefix)
+        # TODO: [OTHER] debug print statement left in production code; remove or guard with verbose
         print(d)
         }
         #write incompatible counts
@@ -86,7 +91,11 @@ writeBambuOutput <- function(se, path, prefix = "", outputExtendedAnno = TRUE,
 }
 
 
-#' helper function to write counts 
+# --- writeCountsOutput ---
+# Module: Module 6 — Visualization, comparison & output | readWrite.R
+# Called by: readWrite.R
+# Call count: 4 calls, 1 file
+#' helper function to write counts
 #' @noRd
 writeCountsOutput <- function(se, varname = "counts",
                               feature = "transcript", outdir, prefix){
@@ -111,6 +120,10 @@ writeCountsOutput <- function(se, varname = "counts",
     }
 }
 
+# --- writeToGTF ---
+# Module: Module 6 — Visualization, comparison & output | readWrite.R
+# Called by: readWrite.R
+# Call count: 4 calls, 1 file (exported — also user-facing)
 #' Write annotation GRangesList into a GTF file
 #' @title write GRangeslist into GTF file
 #' @param annotation a \code{GRangesList} object
@@ -201,6 +214,10 @@ writeToGTF <- function(annotation, file, geneIDs = NULL) {
         col.names = FALSE, sep = "\t")
 }
 
+# --- writeAnnotationsToGTF ---
+# Module: Module 6 — Visualization, comparison & output | readWrite.R
+# Called by: readWrite.R
+# Call count: 1 call, 1 file
 #' Write annotation GRangesList into multiple filtered GTF files
 #' @title write GRangeslist into multiple filtered GTF files
 #' @param annotation a \code{GRangesList} object
@@ -270,6 +287,10 @@ writeAnnotationsToGTF <- function(annotation, file, geneIDs = NULL, outputExtend
 #'     package = "bambu"
 #' )
 #' readFromGTF(gtf.file)
+# --- readFromGTF ---
+# Module: Module 6 — Visualization, comparison & output | readWrite.R
+# Called by: (not called anywhere — user-facing entry point)
+# Call count: 0 internal calls (exported; in-repo mentions are in roxygen docs)
 readFromGTF <- function(file, keep.extra.columns = NULL){
     if (missing(file)) {
         stop('A GTF file is required.')
@@ -315,6 +336,10 @@ readFromGTF <- function(file, keep.extra.columns = NULL){
 #' ))
 #' path <- tempdir()
 #' writeBambuOutput(se, path)
+# --- importBambuResults ---
+# Module: Module 6 — Visualization, comparison & output | readWrite.R
+# Called by: (not called anywhere — user-facing entry point)
+# Call count: 0 internal calls (exported; in-repo mentions are in roxygen docs)
 importBambuResults <- function(path, prefixes = ""){
     if(prefixes == ""){
       path <- paste0(path,"/")

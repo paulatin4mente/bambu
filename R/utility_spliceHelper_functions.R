@@ -5,6 +5,10 @@
 # https://doi.org/doi:10.18129/B9.bioc.GenomicAlignments
 
 
+# --- calculateFirstLastExonsDist ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: utility_spliceHelper_functions.R
+# Call count: 2 calls, 1 file
 #' calculate distance between first and last exon matches
 #' @param queryExon a query start or end exon ranges
 #' @param subjectExon a subject start or end exon ranges
@@ -37,7 +41,11 @@ calculateFirstLastExonsDist <- function(queryExon, subjectExon,
 }
 
 
-#' This function calcualtes compatible splice overlaps allowing for a 
+# --- findSpliceOverlapsByDist ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-extendAnnotations-utilityExtend.R
+# Call count: 3 calls, 1 file
+#' This function calcualtes compatible splice overlaps allowing for a
 #' distance threshold, and returns distance in bp between query and subject.
 #' Can be used to assign more transcripts to annotations and reads to
 #' transcripts.
@@ -88,6 +96,10 @@ findSpliceOverlapsByDist <- function(query, subject, ignore.strand = FALSE,
 }
 
 
+# --- checkStartSequence ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: utility_spliceHelper_functions.R
+# Call count: 1 call, 1 file
 #' check whether error with start sequence
 #' @noRd
 checkStartSequence <- function(olap, firstLastSeparate, queryStart,
@@ -121,9 +133,13 @@ checkStartSequence <- function(olap, firstLastSeparate, queryStart,
 
 
 
+# --- myGaps ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu-processReads_scoreReadClasses.R, compareTranscripts.R, utility_spliceHelper_functions.R
+# Call count: 6 calls, 4 files
 #' Get intron ranges from exon ranges list
 #' @importFrom methods as
-#' @importFrom GenomicRanges GRanges setdiff 
+#' @importFrom GenomicRanges GRanges setdiff
 #' @noRd
 myGaps <- function(x, start = NA, end = NA) {
     # License note: This function is adopted from the GenomicAlignments package
@@ -165,7 +181,11 @@ myGaps <- function(x, start = NA, end = NA) {
 .isNumericOrNAs <- S4Vectors:::isNumericOrNAs
 
 
-#' @importFrom GenomicRanges setdiff intersect 
+# --- rangesDist ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: utility_spliceHelper_functions.R
+# Call count: 1 call, 1 file
+#' @importFrom GenomicRanges setdiff intersect
 #' @noRd
 rangesDist <- function(query, subject, splice, maxDist) {
     qrng <- ranges(query)
@@ -195,6 +215,10 @@ rangesDist <- function(query, subject, splice, maxDist) {
 # License Artistic-2.0
 # https://doi.org/doi:10.18129/B9.bioc.GenomicAlignments
 
+# --- findSpliceOverlapsQuick ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, prepareAnnotations_utilityFunctions.R
+# Call count: 2 calls, 2 files
 #' @importFrom S4Vectors match
 #' @noRd
 findSpliceOverlapsQuick <- function(query, subject, ignore.strand = FALSE) {
@@ -218,10 +242,14 @@ findSpliceOverlapsQuick <- function(query, subject, ignore.strand = FALSE) {
     return(olap)
 }
 
+# --- myCompatibleTranscription ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-processReads_scoreReadClasses.R, utility_spliceHelper_functions.R
+# Call count: 2 calls, 2 files
 #' @param query query
 #' @param subject subject
 #' @param splice splice
-#' @importFrom GenomicRanges setdiff intersect 
+#' @importFrom GenomicRanges setdiff intersect
 #' @noRd
 myCompatibleTranscription <- function(query, subject, splice) {
     qrng <- ranges(query)
@@ -233,6 +261,10 @@ myCompatibleTranscription <- function(query, subject, splice) {
     return(bnds & splc)
 }
 
+# --- myOneMatch ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: utility_spliceHelper_functions.R
+# Call count: 2 calls, 1 file
 #' @param idx idx
 #' @param x x
 #' @noRd
@@ -247,7 +279,11 @@ myOneMatch <- function(x, idx) {
 
 
 
-#' Function to reduce the start end end of the first and last elements in a 
+# --- cutStartEndFromGrangesList ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, bambu-processReads_scoreReadClasses.R, prepareAnnotations_utilityFunctions.R, utility_spliceHelper_functions.R
+# Call count: 8 calls, 4 files
+#' Function to reduce the start end end of the first and last elements in a
 #' granges list objects to a single basepair, helper to identify overlaps
 #' based on splicing only (allow for flexible TSS/TES)
 #' @param grangesList grangesList
@@ -274,6 +310,10 @@ cutStartEndFromGrangesList <- function(grangesList) {
     return(relist(unlistedExons, partitioning))
 }
 
+# --- extendGrangesListElements ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: utility_spliceHelper_functions.R
+# Call count: 1 call, 1 file
 #' @param grangesList grangesList
 #' @param by defaults to 5
 #' @noRd
@@ -289,6 +329,10 @@ extendGrangesListElements <- function(grangesList, by = 5) {
 }
 
 
+# --- dropGrangesListElementsByWidth ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: utility_spliceHelper_functions.R
+# Call count: 1 call, 1 file
 #' @param grangesList grangesList
 #' @param minWidth defaults to 5
 #' @param cutStartEnd defaults to FALSE
@@ -317,6 +361,10 @@ dropGrangesListElementsByWidth <- function(grangesList, minWidth = 5,
     unlistedExons <- unlistedExons[exonWidth >= minWidth]
     return(relist(unlistedExons, partitioning))
 }
+# --- selectStartExonsFromGrangesList ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-processReads_scoreReadClasses.R, utility_spliceHelper_functions.R
+# Call count: 3 calls, 2 files
 #' Function that selects the first N exons from a grangeslist object
 #' (exon_rank is required)
 #' @param grangesList grangesList
@@ -330,7 +378,11 @@ selectStartExonsFromGrangesList <- function(grangesList, exonNumber = 2) {
     return(relist(unlisted_granges[startExonsSet], partitioning))
 }
 
-#' Function that selects the last N exons from a grangeslist object 
+# --- selectEndExonsFromGrangesList ---
+# Module: Shared utilities | utility_spliceHelper_functions.R
+# Called by: bambu-processReads_scoreReadClasses.R, utility_spliceHelper_functions.R
+# Call count: 3 calls, 2 files
+#' Function that selects the last N exons from a grangeslist object
 #' (exon_endRank is required)
 #' @describeIn selectStartExonsFromGrangesList grangesList
 #' @noRd

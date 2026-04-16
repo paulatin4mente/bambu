@@ -1,3 +1,7 @@
+# --- modifyIncompatibleAssignment ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' modifiy incompatible read classes assignment
 #' @import data.table
 #' @noRd
@@ -17,6 +21,10 @@ modifyIncompatibleAssignment <- function(distTable){
 }
 
 
+# --- processIncompatibleCounts ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls (exported or not called internally)
 #' Process incompatible counts
 #' @noRd
 processIncompatibleCounts <- function(distTable){
@@ -32,8 +40,12 @@ processIncompatibleCounts <- function(distTable){
 }
 
 
+# --- genEquiRCs ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' This function aims to aggregate RC to equiRCs with the consideration of full
-#' or partial alignment status and add empty read class depends on the minimal 
+#' or partial alignment status and add empty read class depends on the minimal
 #' eqClass from annotations
 #' @import data.table
 #' @noRd
@@ -56,8 +68,12 @@ genEquiRCs <- function(readClassDist, annotations, verbose){
   return(eqClassTable)
 }
 
-#' This function formats the distance table obtained from readClass by checking 
-#' the distance between readClass and transcripts to create equiValence read 
+# --- genEquiRCsBasedOnObservedReads ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu_utilityFunctions.R
+# Call count: 1 call, 1 file
+#' This function formats the distance table obtained from readClass by checking
+#' the distance between readClass and transcripts to create equiValence read
 #' classes
 #' @import data.table
 #' @noRd
@@ -85,6 +101,10 @@ genEquiRCsBasedOnObservedReads <- function(readClass){
   return(distTable)
 }
 
+# --- createList ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 2 calls, 1 file
 #' create list
 #' @import data.table
 #' @noRd
@@ -97,6 +117,10 @@ createList <- function(query, subject){
 }
 
 
+# --- getUniCountPerEquiRC ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' get the count and rc_width for each equiRC
 #' @import data.table
 #' @noRd
@@ -116,7 +140,11 @@ getUniCountPerEquiRC <- function(distTable){
 }
 
 
-# add minimal equiRC 
+# --- addEmptyRC ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
+# add minimal equiRC
 #' @import data.table
 #' @noRd
 addEmptyRC <- function(eqClassCount, annotations){
@@ -134,6 +162,10 @@ addEmptyRC <- function(eqClassCount, annotations){
   return(eqClassCount_final)
 }
 
+# --- processMinEquiRC ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
 # process minEquiRC
 #' @import data.table
 #' @noRd
@@ -162,6 +194,10 @@ processMinEquiRC <- function(annotations){
   return(minEquiRC)
 }
 
+# --- unAsIs ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' Function to get rid of AsIs class so that group_by can be used on eqClassById column in mcols(annotations)
 #' credit to https://stackoverflow.com/questions/12865218/getting-rid-of-asis-class-attribute
 #' @noRd
@@ -173,8 +209,12 @@ unAsIs <- function(X) {
 }
 
 
+# --- createEqClassToTxMapping ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' Create eqClass to tx mapping based on eqClassById
-#' @import tidyr 
+#' @import tidyr
 #' @noRd
 createEqClassToTxMapping <- function(eqClassTable){
   eqClassTable_unnest <- eqClassTable %>% 
@@ -185,6 +225,10 @@ createEqClassToTxMapping <- function(eqClassTable){
   return(eqClassTable_unnest)
 }
 
+# --- addAval ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' Add A matrix for total, full-length, unique
 #' @noRd
 addAval <- function(readClassDt, emParameters, verbose){
@@ -228,6 +272,10 @@ addAval <- function(readClassDt, emParameters, verbose){
   return(list(readClassDt_withGeneCount,outList))
 }
 
+# --- simplifyNames ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' This function converts transcript, gene, and read class names to simple
 #' integers for more efficient computation
 #' @import data.table
@@ -240,7 +288,11 @@ simplifyNames <- function(readClassDt){
 }
 
 
-#' Calculate degradation rate based on equiRC read counts 
+# --- calculateDegradationRate ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
+#' Calculate degradation rate based on equiRC read counts
 #' @import data.table
 #' @noRd
 calculateDegradationRate <- function(readClassDt){
@@ -269,7 +321,11 @@ calculateDegradationRate <- function(readClassDt){
 
 
 
-#' This function generates a_mat values for all transcripts 
+# --- modifyAvaluewithDegradation_rate ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
+#' This function generates a_mat values for all transcripts
 #' @import data.table
 #' @noRd
 modifyAvaluewithDegradation_rate <- function(tmp, d_rate, d_mode){
@@ -296,6 +352,10 @@ modifyAvaluewithDegradation_rate <- function(tmp, d_rate, d_mode){
 }
 
 
+# --- removeUnObservedGenes ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' @import data.table
 #' @noRd
 removeUnObservedGenes <- function(readClassDt){
@@ -316,9 +376,13 @@ removeUnObservedGenes <- function(readClassDt){
 
 
 
+# --- initialiseOutput ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' This function initialises the final estimates with default values
 #' @import data.table
-#' @noRd 
+#' @noRd
 initialiseOutput <- function(readClassDt){
   return(unique(data.table(txid = readClassDt$txid,
                            counts = 0,
@@ -327,6 +391,10 @@ initialiseOutput <- function(readClassDt){
 }
 
 
+# --- filterTxRc ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' filter transcripts without read support
 #' @noRd
 filterTxRc <- function(readClassDt){
@@ -342,6 +410,10 @@ filterTxRc <- function(readClassDt){
 }
 
 
+# --- assignGroups ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' Assign internal groups for grouped fast processing
 #' @noRd
 assignGroups <- function(readClassDt){
@@ -354,7 +426,11 @@ assignGroups <- function(readClassDt){
   readClassDt[, `:=`(cumN = NULL, tr_dimension = NULL)]
   return(readClassDt)
 }
-#' 
+# --- getInputList ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
+#'
 #' @noRd
 getInputList <- function(readClassDt){
   nObsVec <- unique(readClassDt[,.(gene_grp_id, gene_sid, eqClassId, K, n.obs)])[order(gene_grp_id, gene_sid, eqClassId)]
@@ -371,6 +447,10 @@ getInputList <- function(readClassDt){
 }
 
 
+# --- abundance_quantification ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' Nanopore transcript abundance quantification
 #' @title transcript_abundance_quantification
 #' @param readClassDt A \code{data.table} with columns
@@ -391,6 +471,10 @@ abundance_quantification <- function(inputRcDt, readClassDt,
 }
 
 
+# --- run_parallel ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls (exported or not called internally)
 #' function to run in parallel
 #' @title run_parallel
 #' @param g the serial id of gene
@@ -422,6 +506,10 @@ run_parallel <- function(g, conv, minvalue, maxiter, inputRcDt, readClassDt) {
 }
 
 
+# --- getAMat ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify_utilityFunctions.R
+# Call count: 3 calls, 1 file
 #' Get the A matrix
 #' @noRd
 getAMat <- function(rcMat, by = "aval"){
@@ -432,6 +520,10 @@ getAMat <- function(rcMat, by = "aval"){
 
 
 
+# --- modifyQuantOut ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' Modify default quant output using estimated outputs
 #' @import data.table
 #' @noRd
@@ -443,6 +535,10 @@ modifyQuantOut <- function(outEst, outIni){
 }
 
 
+# --- removeDuplicates ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' Remove duplicate transcript counts originated from multiple genes
 #' @import data.table
 #' @noRd
@@ -458,6 +554,10 @@ removeDuplicates <- function(counts){
 
 
 
+# --- generateReadToTranscriptMap ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' Generate read to transcript mapping
 #' @noRd
 generateReadToTranscriptMap <- function(readClass, distTable, annotations){
@@ -495,6 +595,10 @@ generateReadToTranscriptMap <- function(readClass, distTable, annotations){
   return(readToTranscriptMap)
 }
 
+# --- calculateEqClassCounts ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: (not called anywhere)
+# Call count: 0 internal calls (exported or not called internally)
 #' Get counts of equivilent classes from a distTable and match to a readClassDt
 #' @noRd
 calculateEqClassCounts <- function(distTable, readClassDt){
@@ -513,6 +617,10 @@ calculateEqClassCounts <- function(distTable, readClassDt){
         return(eqCounts)
 }
 
+# --- calculateCPM ---
+# Module: Module 4 — Read class to transcript assignment | bambu-quantify_utilityFunctions.R
+# Called by: bambu-quantify.R
+# Call count: 1 call, 1 file
 #' calculate CPM post estimation
 #' @noRd
 calculateCPM <- function(compatibleCounts, incompatibleCounts){

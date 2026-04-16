@@ -1,3 +1,7 @@
+# --- assignReadClasstoTranscripts ---
+# Module: Module 4 — Read class to transcript assignment | bambu-assignDist.R
+# Called by: bambu.R
+# Call count: 1 call, 1 file
 #' Create equivilence classes and assign to transcripts
 #' @inheritParams bambu
 #' @import data.table
@@ -46,9 +50,14 @@ assignReadClasstoTranscripts <- function(readClassList, annotations, isoreParame
 
 }
 
+# --- generateUniqueCounts ---
+# Module: Module 4 — Read class to transcript assignment | bambu-assignDist.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' Generate unique counts
 #' @noRd
 generateUniqueCounts <- function(readClassDt, countMatrix, annotations){
+    # TODO: [POOR NAMING] x is used to store filtered unique read classes; rename to uniqueReadClassDt or similar
     x <- readClassDt %>% filter(!multi_align & !is.na(eqClass.match))
     uniqueCounts <- countMatrix[x$eqClass.match,]
     uniqueCounts.tx <- sparse.model.matrix(~ factor(x$txid) - 1)
@@ -58,8 +67,8 @@ generateUniqueCounts <- function(readClassDt, countMatrix, annotations){
     rownames(counts) <- names(annotations)
     counts[rownames(uniqueCounts),] <- uniqueCounts
     return(counts)
-    
-    # these three lines appear after return, so it's not used, is this used for debug only?
+
+    # TODO: [UNUSED CODE] the three lines below are unreachable (after return); remove them
     # counts.total = colSums(countMatrix) + colSums(incompatibleCountMatrix)
     # counts.total[counts.total==0] = 1
     # counts.CPM = counts/counts.total * 10^6
@@ -67,6 +76,10 @@ generateUniqueCounts <- function(readClassDt, countMatrix, annotations){
 }
 
 
+# --- generateIncompatibleCounts ---
+# Module: Module 4 — Read class to transcript assignment | bambu-assignDist.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' Generate incompatible counts
 #' @noRd
 generateIncompatibleCounts <- function(incompatibleCountMatrix, annotations){
@@ -79,10 +92,15 @@ generateIncompatibleCounts <- function(incompatibleCountMatrix, annotations){
 }
 
 
+# --- generateNonUniqueCounts ---
+# Module: Module 4 — Read class to transcript assignment | bambu-assignDist.R
+# Called by: bambu-assignDist.R
+# Call count: 1 call, 1 file
 #' Generate non-unique counts
 #' @noRd
 generateNonUniqueCounts <- function(readClassDt, countMatrix, annotations){
     #fuse multi align RCs by gene
+    # TODO: [POOR NAMING] x reused with a different meaning than in generateUniqueCounts (multi-aligned reads); rename to multiAlignReadClassDt
     x <- readClassDt %>% filter(multi_align & !is.na(eqClass.match))
     x <- x %>% distinct(eqClassId, .keep_all = TRUE)
     nonuniqueCounts <- countMatrix[x$eqClass.match,, drop = FALSE]

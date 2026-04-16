@@ -1,3 +1,7 @@
+# --- plotAnnotation ---
+# Module: Module 6 — Visualization, comparison & output | [plotBambu_utilityFunctions.R]
+# Called by: plotBambu.R
+# Call count: 1 call, 1 file
 #' plot annotation
 #' @param se a SummarizedExperiment object
 #' @param gene_id a list of gene id(s)
@@ -27,6 +31,10 @@ plotAnnotation <- function(se, gene_id, transcript_id) {
     }
 }
 
+# --- plotAnnotation_withExpression ---
+# Module: Module 6 — Visualization, comparison & output | [plotBambu_utilityFunctions.R]
+# Called by: plotBambu_utilityFunctions.R
+# Call count: 1 call, 1 file
 #' plot annotation
 #' @inheritParams plotAnnotation
 #' @noRd
@@ -58,14 +66,22 @@ plotAnnotation_withExpression <-  function(se, gene_id, transcript_id) {
     }
 }
 
-#' label feature wtih strand added 
+# --- labelFeature ---
+# Module: Module 6 — Visualization, comparison & output | [plotBambu_utilityFunctions.R]
+# Called by: plotBambu_utilityFunctions.R
+# Call count: 4 calls, 1 file
+#' label feature wtih strand added
 #' @inheritParams plotAnnotation_withExpression
 #' @noRd
 labelFeature <- function(feature_id,featureRange){
     paste0(feature_id, ":", as.character(unlist(unique(strand(featureRange)))))
 }
 
-#' the plotting function 
+# --- plotAnnotation_plotFunction ---
+# Module: Module 6 — Visualization, comparison & output | [plotBambu_utilityFunctions.R]
+# Called by: plotBambu_utilityFunctions.R
+# Call count: 2 calls, 1 file
+#' the plotting function
 #' @inheritParams plotAnnotation_withExpression
 #' @noRd
 plotAnnotation_plotFunction <- function(geneRange, txRanges,se,txVec){
@@ -82,6 +98,10 @@ plotAnnotation_plotFunction <- function(geneRange, txRanges,se,txVec){
     return(p)
 }
 
+# --- plotPCA ---
+# Module: Module 6 — Visualization, comparison & output | [plotBambu_utilityFunctions.R]
+# Called by: plotBambu.R
+# Call count: 1 call, 1 file
 #' plot PCA
 #' @param se a SummarizedExperiment object
 #' @param count.data a dataframe of log2CPM
@@ -122,6 +142,10 @@ plotPCA <- function(se, count.data, group.variable) {
     }
     return(p)
 }
+# --- plotHeatmap ---
+# Module: Module 6 — Visualization, comparison & output | [plotBambu_utilityFunctions.R]
+# Called by: plotBambu.R
+# Call count: 1 call, 1 file
 #' plot heatmap
 #' @param se a SummarizedExperiment object
 #' @param count.data a dataframe of log2CPM

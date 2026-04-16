@@ -1,5 +1,9 @@
+# --- prepareAnnotationsFromGTF ---
+# Module: Module 1 — Annotation preparation | prepareAnnotations_utilityFunctions.R
+# Called by: prepareAnnotations.R
+# Call count: 1 calls, 1 files
 #' Prepare annotation granges object from GTF file
-#' @title Prepare annotation granges object from GTF file into a 
+#' @title Prepare annotation granges object from GTF file into a
 #' GRangesList object
 #' @param file a GTF file
 #' @return A \code{\link{GRangesList}} object
@@ -100,6 +104,10 @@ prepareAnnotationsFromGTF <- function(file) {
 }
 
 
+# --- getMinimumEqClassByTx ---
+# Module: Module 1 — Annotation preparation | prepareAnnotations_utilityFunctions.R
+# Called by: bambu-extendAnnotations-utilityExtend.R, prepareAnnotations.R, prepareAnnotations_utilityFunctions.R
+# Call count: 5 calls, 3 files
 #' Get minimum equivalent class by Transcript
 #' equivalent classes are identical if transcripts are ordered alphabetically,
 #' annotations=prepareAnnotations('annotations.gtf')

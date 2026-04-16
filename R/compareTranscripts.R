@@ -24,6 +24,10 @@
 #        package = "bambu"))
 ############################################################
 
+# --- compareTranscripts ---
+# Module: Module 6 — Visualization, comparison & output | compareTranscripts.R
+# Called by: (not called anywhere — user-facing entry point)
+# Call count: 0 internal calls (exported; in-repo mentions are in roxygen docs)
 #' @title compare alternatively-spliced transcripts
 #' @param query a GRangesList of transcripts
 #' @param subject a GRangesList of transcripts
