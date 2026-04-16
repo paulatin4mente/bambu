@@ -19,7 +19,7 @@
 #'     package = "bambu"))
 #' strand <- as.character(getStrandFromGrList(query))
 #' @noRd
-getStrandFromGrList <- function(grl) { 
+getStrandFromGrList <- function(grl) {  #TODO (JG) [bambu-modules] move to general utilities file? used multiple times
     return(unlist(strand(grl), use.names = FALSE)[cumsum(elementNROWS(grl))]) 
 }
 

@@ -62,7 +62,7 @@ bambu.processReads <- function(reads, annotations, genomeSequence,
     min.exonOverlap <- isoreParameters[["min.exonOverlap"]]
 
     if(processByBam){ #TODO (JG) [rewrite-processByBam] processByBam can be default to TRUE, possibly remove the part below to combine read classes across files. redundant, difficult to maintain?
-        readClassList <- bplapply(seq_along(reads), function(i) { #### HERE ####
+        readClassList <- bplapply(seq_along(reads), function(i) { #TODO (JG) [rewrite-processByBam] index is hardcoded to 1 and not used here, and also not used in function below
             bambu.processReadsByFile(bam.file = reads[i],
             genomeSequence = genomeSequence,annotations = annotations,
             stranded = stranded, min.readCount = min.readCount, 
@@ -140,13 +140,13 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations,
     if(verbose) message(names(bam.file)[1])
     readGrgList <- prepareDataFromBam(bam.file[[1]], verbose = verbose, yieldSize = yieldSize, use.names = trackReads, demultiplexed = demultiplexed, cleanReads = cleanReads, dedupUMI = dedupUMI)
     if(verbose) message(paste0("Number of alignments/reads: ",length(readGrgList)))
-    warnings <- c()
+    warnings <- c() #TODO (JG) [warnings] need to be implemented
     if(!is.null(barcodesToFilter) & !isFALSE(demultiplexed))
         readGrgList <- readGrgList[!(mcols(readGrgList)$CB %in% barcodesToFilter)]
     warnings <- seqlevelCheckReadsAnnotation(readGrgList, annotations)
     if(verbose & length(warnings) > 0) warning(paste(warnings,collapse = "\n"))
     #check seqlevels for consistency, drop ranges not present in genomeSequence
-    refSeqLevels <- seqlevels(genomeSequence)
+    refSeqLevels <- seqlevels(genomeSequence) 
     if (!all(seqlevels(readGrgList) %in% refSeqLevels)) {
         refSeqLevels <- intersect(refSeqLevels, seqlevels(readGrgList))
         if (!all(seqlevels(annotations) %in% refSeqLevels)&(!(length(annotations)==0))) {
@@ -166,7 +166,7 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations,
         readGrgList <- keepSeqlevels(readGrgList, value =  refSeqLevels,
                                      pruning.mode = "coarse")
         # reassign Ids after seqlevels are dropped
-        mcols(readGrgList)$id <- seq_along(readGrgList) 
+        mcols(readGrgList)$id <- seq_along(readGrgList) #TODO (JG) [unused-code] this line is redundant with the line below
     }
     #removes reads that are outside genome coordinates
     badReads <- which(max(end(ranges(readGrgList)))>
@@ -187,7 +187,7 @@ bambu.processReadsByFile <- function(bam.file, genomeSequence, annotations,
     if(!isFALSE(demultiplexed)){ 
         mcols(readGrgList)$sampleID <- as.numeric(mcols(readGrgList)$CB)
     } else {
-        mcols(readGrgList)$sampleID <- index
+        mcols(readGrgList)$sampleID <- index #TODO (JG) [rewrite-processByBam]index option can be removed if t seems to be hardcoded to 1, as this option can't be changed?
     }
         
     # construct read classes for each chromosome seperately
@@ -407,7 +407,7 @@ lowMemoryConstructReadClasses <- function(readGrgList, genomeSequence,
 #' Check seqlevels for reads and annotations
 #' @importFrom GenomeInfoDb seqlevels
 #' @noRd
-seqlevelCheckReadsAnnotation <- function(reads, annotations){
+seqlevelCheckReadsAnnotation <- function(reads, annotations){ #TODO (JG) [validate-input] should this be done by reading annotations and bam file for chromosome style match? instead of here? downstream of checkinput section we can assume all is correc then?
     warnings <- c()
     if (length(intersect(seqlevels(reads),
                          seqlevels(annotations))) == 0)
@@ -425,7 +425,7 @@ seqlevelCheckReadsAnnotation <- function(reads, annotations){
 #' Split read class files
 #' @importFrom dplyr Matrix
 #' @noRd
-splitReadClassFiles = function(readClassFile){
+splitReadClassFiles = function(readClassFile){  #TODO (JG) [bambu-modules] this is only used in assignDist, move there? what is this function doing
     distTable <- metadata(metadata(readClassFile)$readClassDist)$distTable  
     eqClasses <- distTable %>% group_by(eqClassById) %>% 
         distinct(eqClassById, readCount,GENEID, totalWidth, firstExonWidth, .keep_all = TRUE)
@@ -473,7 +473,7 @@ splitReadClassFiles = function(readClassFile){
 #' Split read class files by RC
 #' @importFrom Matrix
 #' @noRd
-splitReadClassFilesByRC <- function(readClassFile){
+splitReadClassFilesByRC <- function(readClassFile){ #TODO (JG) [bambu-modules] this is only used in bambu, part of clustering. Should not be here
     counts.table <- tableFunction(rowData(readClassFile)$sampleIDs)
     counts <- sparseMatrix(
         i = rep(seq_along(counts.table), lengths(counts.table)),
@@ -489,6 +489,6 @@ splitReadClassFilesByRC <- function(readClassFile){
 # Call count: 2 calls, 1 files
 #' table sample IDs list column
 #' @noRd
-tableFunction <- function(xList){
+tableFunction <- function(xList){ #TODO (JG) [bambu-modules] this is only used as part of clustering, should move with the above function
     return(lapply(xList, function(x) table(x)))
 }

@@ -12,7 +12,7 @@
 #' @param verbose verbose
 #' @inheritParams bambu
 #' @noRd
-isore.constructReadClasses <- function(readGrgList, unlisted_junctions,
+isore.constructReadClasses <- function(readGrgList, unlisted_junctions,   
                                        uniqueJunctions, runName = "sample1",
                                        annotations, stranded = FALSE, verbose = FALSE) {
     #split reads into single exon and multi exon reads
@@ -92,7 +92,7 @@ constructSplicedReadClasses <- function(uniqueJunctions, unlisted_junctions,
     } else {
         readStrand <- as.factor(getStrandFromGrList(readGrgList))
     }
-    # confidence type (note: can be changed to integer encoding)
+    # confidence type (note: can be changed to integer encoding) #####HERE######
     readConfidence <- factor(rep("highConfidenceJunctionReads",
         length(readStrand)), levels = c('highConfidenceJunctionReads',
         'lowConfidenceJunctionReads'))
