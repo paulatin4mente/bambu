@@ -13,7 +13,7 @@
 #' @noRd
 prepareDataFromBam <- function(bamFile, yieldSize = NULL, verbose = FALSE, 
         use.names = FALSE, demultiplexed = FALSE, cleanReads = TRUE, dedupUMI = FALSE) {
-    if (is(bamFile, "BamFile")) {
+    if (is(bamFile, "BamFile")) { #TODO (JG) [validate-input] this should have been completed in the beginningm is duplicated here(?)
         if (!is.null(yieldSize)) {
             yieldSize(bamFile) <- yieldSize
         } else {
