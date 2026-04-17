@@ -156,7 +156,7 @@ readFromGTF <- function(file, keep.extra.columns = NULL){
             "end","score","strand","frame","attribute")
     data <- data[data$type == 'exon',]
     data$strand[data$strand == '.'] <- '*'
-    data$GENEID = gsub('gene_id (.*?);.*','\\1',data$attribute)
+    data$GENEID = gsub('.*gene_id (.*?);.*','\\1',data$attribute)
     data$TXNAME = gsub('.*transcript_id (.*?);.*', '\\1',data$attribute)
     data$exon_rank = gsub('.*exon_number (.*?);.*', '\\1',data$attribute)
     if (!is.null(keep.extra.columns)) {
