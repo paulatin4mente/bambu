@@ -200,38 +200,40 @@ predictSpliceJunctions <- function(annotatedJunctions, junctionModel=NULL,
 #' @importFrom xgboost xgboost
 #' @importFrom stats fisher.test
 #' @noRd
-fitXGBoostModel <- function(labels.train, data.train, nrounds = 50, 
-                            show.cv=TRUE, maxSize.cv=10000){
+fitXGBoostModel <- function(labels.train, data.train, nrounds = 50,
+                            show.cv = TRUE, maxSize.cv = 10000) {
+    # Ensure labels are numeric 0/1 (xgboost 2.x dropped logical support)
+    labels.train <- as.numeric(labels.train)
+
     if (show.cv) {
         mySample <- sample(seq_along(labels.train),
-                           min(floor(length(labels.train)/2),maxSize.cv))
-        data.train.cv <- data.train[mySample,]
-        labels.train.cv <- labels.train[mySample]
-        data.train.cv.test <- data.train[-mySample,]
+                           min(floor(length(labels.train) / 2), maxSize.cv))
+        data.train.cv       <- data.train[mySample, ]
+        labels.train.cv     <- labels.train[mySample]
+        data.train.cv.test  <- data.train[-mySample, ]
         labels.train.cv.test <- labels.train[-mySample]
-        
-        cv.fit <- xgboost(x = data.train.cv, 
-            y = labels.train.cv, nthread = 1, nrounds = nrounds, 
-            objective = "binary:logistic", 
-            eval_metric = 'error')
-        predictions <- predict(cv.fit, data.train.cv.test)
-        message('prediction accuracy (CV) (higher for splice ',
-                'donor than splice acceptor)')
-        # Predictions is thresholded on 0.5 instead of 0 now to produce a 
-        # proper confusion matrix and fix an error that occurred with the
-        # argument to fisher.test()
-        testResults <- fisher.test(table(predictions > 0.5,
-                                         labels.train.cv.test))
+
+        dtrain.cv <- xgboost::xgb.DMatrix(data = data.train.cv,
+                                           label = labels.train.cv)
+        cv.fit <- xgboost::xgboost(data = dtrain.cv,
+                                   nthread = 1, nrounds = nrounds,
+                                   objective = "binary:logistic",
+                                   eval_metric = "error",
+                                   verbose = 0)
+        predictions <- predict(cv.fit, xgboost::xgb.DMatrix(data.train.cv.test))
+        message("prediction accuracy (CV) (higher for splice donor than splice acceptor)")
+        testResults <- fisher.test(table(predictions > 0.5, labels.train.cv.test > 0.5))
         message("estimate: ", testResults$estimate)
-        message("pValue: ", testResults$p.value)
-        message("AUC: ", evaluatePerformance(labels.train.cv.test == 1,predictions)$AUC)
+        message("pValue: ",   testResults$p.value)
+        message("AUC: ", evaluatePerformance(labels.train.cv.test == 1, predictions)$AUC)
     }
-    
-    cv.fit <- xgboost(x = data.train, 
-                      y = labels.train, nthread=1, nrounds=nrounds, 
-                      objective = "binary:logistic", 
-                      eval_metric='error')
-    
+
+    dtrain <- xgboost::xgb.DMatrix(data = data.train, label = labels.train)
+    cv.fit <- xgboost::xgboost(data = dtrain,
+                               nthread = 1, nrounds = nrounds,
+                               objective = "binary:logistic",
+                               eval_metric = "error",
+                               verbose = 0)
     return(cv.fit)
 }
 
